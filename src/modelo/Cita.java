@@ -84,6 +84,10 @@ public class Cita {
         this.fecha = fecha;
     }
 
+    public void setTratamiento(String tratamiento) {
+        this.tratamiento = tratamiento;
+    }
+
     public void setDiagnostico(String diagnostico) {
         this.diagnostico = diagnostico;
     }
