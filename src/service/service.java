@@ -1,8 +1,11 @@
 package service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import data.DatosEjemplo;
 import modelo.*;
 
 public class service {
@@ -22,11 +25,32 @@ public class service {
         this.pacientes = new ArrayList<>();
         this.consultorios = new ArrayList<>();
         this.recepcionista = new ArrayList<>();
-        this.contadorMedicos = 1;
-        this.contadorPacientes = 1;
-        this.contadorConsultorios = 1;
+        this.contadorMedicos = 4;
+        this.contadorPacientes = 4;
+        this.contadorConsultorios = 5;
         this.contadorCitas = 1;
+
+        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
+        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
+        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
+        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
+
+//        if(ejemplos) {
+//            cargarEjemplos();
+//        }
+
     }
+
+//    public service() {
+//        this(true);
+//    }
+//
+//    public void cargarEjemplos(){
+//        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
+//        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
+//        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
+//        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
+//    }
 
     //metodo para generar id//
     private String generadorIdCita(){
@@ -297,7 +321,7 @@ public class service {
 
         List<Medico> especialistas = medicos.stream()
                 .filter(doc -> doc.getEspecialidad().equalsIgnoreCase(especialidad))
-                .collect(Collectors.toList());
+                .toList();
 
         if(especialistas.isEmpty()){
             return "No hay especialistas disponibles en " + especialistas;
@@ -312,5 +336,23 @@ public class service {
             sb.append(String.format("Dr(a). %s / Consultorio: %s\n " + m.nombreCompleto() + m.getEspecialidad()));
         }
         return sb.toString();
+    }
+
+    //Listar
+
+    public List<Paciente> enlistarPacientes(){
+        return new ArrayList<>(pacientes);
+    }
+
+    public List<Medico> enlistarMedicos() {
+        return new ArrayList<>(medicos);
+    }
+
+    public List<Consultorio> enlistarConsultorios() {
+        return new ArrayList<>(consultorios);
+    }
+
+    public List<Cita> enlistarCitas() {
+        return new ArrayList<>(citas);
     }
 }
