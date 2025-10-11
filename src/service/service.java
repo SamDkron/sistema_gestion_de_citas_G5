@@ -199,6 +199,41 @@ public class service {
         return true;
     }
 
+    public String consultarHistoriaClinicaPaciente(String idPaciente) {
+        Paciente paciente = searchPacienteById(idPaciente);
+        if(paciente == null){
+            throw new IllegalArgumentException("La paciente no se encuentra en el paciente.");
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Paciente:\n");
+        sb.append("Historia clínica del paciente: ");
+        sb.append(String.format("Nombre: %s\n", paciente.nombreCompleto()));
+        sb.append(String.format("Historia Clínica: %s\n", paciente.getHistoriaClinica()));
+        sb.append(String.format("Grupo Sanguíneo: %s\n", paciente.getTipoSangre()));
+        sb.append(String.format("Fecha De Nacimiento: %s\n", paciente.getFechaNacimiento()));
+        sb.append(String.format("Sexo: %s\n", paciente.getSexo()));
+        sb.append(String.format("Número de Telefono: %s\n", paciente.getTelefono()));
+
+        List<Cita> pacienteCitas = citas.stream()
+                . filter(c -> c.getPaciente().getId().equals(paciente.getId()))
+                .filter(c -> c.getEstadoCita() == citaState.COMPLETADA)
+                .sorted(Comparator.comparing(Cita::getFecha).reversed())
+                .collect(Collectors.toList());
+
+        sb.append("Historial de citas: \n");
+
+        if(pacienteCitas.isEmpty()){
+            sb.append("No hay citas completadas.\n");
+        } else {
+            for (Cita c : pacienteCitas) {
+                sb.append(c.toString()).append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
     //metodos de medico//
 
     public Paciente verPaciente(String idPaciente) {
@@ -236,7 +271,7 @@ public class service {
         return false;
     }
 
-    public boolean registrarObservaciones(String idCita, String observaciones){
+    public boolean realizarObservaciones(String idCita, String observaciones){
         Cita cita = searchCitaById(idCita);
         if(cita != null){
             cita.setObservaciones(observaciones);
@@ -252,5 +287,30 @@ public class service {
             return searchConsultorioByNumero(medico.getConsultorioAsignado());
         }
         return null;
+    }
+
+    public String remitirPaciente(String idCita, String especialidad, String motivo){
+        Cita cita = searchCitaById(idCita);
+        if(cita == null){
+            throw new IllegalArgumentException("La cita no se encuentra.");
+        }
+
+        List<Medico> especialistas = medicos.stream()
+                .filter(doc -> doc.getEspecialidad().equalsIgnoreCase(especialidad))
+                .collect(Collectors.toList());
+
+        if(especialistas.isEmpty()){
+            return "No hay especialistas disponibles en " + especialistas;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("REMITIR PACIENTE A ESPECIALISTA");
+        sb.append(String.format("Paciente: %s\n", cita.getPaciente().nombreCompleto()));
+        sb.append(String.format("Motivo: %s\n\n", motivo));
+        sb.append("Especialistas: " + especialistas + "\n");
+        for(Medico m : especialistas){
+            sb.append(String.format("Dr(a). %s / Consultorio: %s\n " + m.nombreCompleto() + m.getEspecialidad()));
+        }
+        return sb.toString();
     }
 }
