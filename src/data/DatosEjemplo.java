@@ -1,3 +1,7 @@
+/**
+ * @author Samuel David Dau Fernández, Santiago Duica Plata, Gustavo Daniel Olivos Rodríguez
+ */
+
 package data;
 
 import modelo.*;
@@ -6,7 +10,10 @@ import java.util.List;
 
 /**
  * Clase encargada de inicializar todos los datos de ejemplo del sistema.
- * Se encarga de la creación de pacientes, médicos, consultorios y recepcionistas para usarlos como datos de ejemplo para probar el funcionamiento del sistema.
+ * <p>
+ *     Se encarga de la creación de pacientes, médicos, consultorios y recepcionistas
+ *     para usarlos como datos de ejemplo para probar el funcionamiento del sistema.
+ * </p>
  */
 
 public class DatosEjemplo {

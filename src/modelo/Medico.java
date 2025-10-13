@@ -1,3 +1,7 @@
+/**
+ * @author Samuel David Dau Fernández, Santiago Duica Plata, Gustavo Daniel Olivos Rodríguez
+ */
+
 package modelo;
 
 import java.util.ArrayList;
