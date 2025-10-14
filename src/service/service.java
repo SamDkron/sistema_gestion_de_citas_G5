@@ -32,8 +32,8 @@ public class service {
     private int contadorCitas;
 
     /**
-    * constructor del programa
-    */
+     * constructor del programa
+     */
     public service() {
         this.citas = new ArrayList<>();
         this.medicos = new ArrayList<>();
@@ -49,26 +49,7 @@ public class service {
         this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
         this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
         this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-
-//        if(ejemplos) {
-//            cargarEjemplos();
-//        }
-
     }
-
-//    public service() {
-//        this(true);
-//    }
-//
-//    public void cargarEjemplos(){
-//        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
-//        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
-//        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
-//        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-//    }
-
-
-
 
     /**
      * metodo encargado de generar un id a cada cita nueva que se genere
@@ -165,7 +146,7 @@ public class service {
      * Se utiliza para validar el horario o la disponibilidad del medico y del consultorio.
      */
 
-     /**
+    /**
      * @param medico objeto de clase Medico
      * @param fechaHora hora de la cita nueva
      * @return true o false dependiendo de la disponibilidad del medico
@@ -455,6 +436,20 @@ public class service {
         return nuevoMedico;
     }
 
+    /**
+     * Método que crea un nuevo paciente y lo añade a la lista de los demás.
+     * @param id ID del paciente.
+     * @param nombre Nombre del paciente.
+     * @param apellido Apellido del paciente.
+     * @param telefono Telefono del paciente.
+     * @param email Email del paciente.
+     * @param password Contraseña del paciente.
+     * @param historiaClinica Historia clínica del paciente.
+     * @param fechaNacimiento Fecha de nacimiento del paciente.
+     * @param tipoSangre Tipo de sangre del paciente.
+     * @param sexo Sexo del paciente.
+     * @return El nuevo paciente.
+     */
     public Paciente registrarPaciente(String id, String nombre, String apellido, String telefono,
                                       String email, String password, String historiaClinica,
                                       String fechaNacimiento, String tipoSangre, String sexo) {
@@ -464,6 +459,13 @@ public class service {
         return nuevoPaciente;
     }
 
+    /**
+     * Método para asignarle un consultorio a un médico.
+     * @param idMedico ID del médico.
+     * @param numeroConsultorio Numero del consultorio.
+     * @param fecha Fecha de cuando se le asignará el consultorio.
+     * @return Si se le asignó el consultorio o si no se pudo asignar.
+     */
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
 
         Medico medico = searchMedicoById(idMedico);
@@ -478,6 +480,11 @@ public class service {
         return false;
     }
 
+    /**
+     * Método para ver la información de un paciente a partir de su ID.
+     * @param idPaciente ID del paciente.
+     * @return Información del paciente.
+     */
     public String consultarPaciente(String idPaciente) {
         Paciente paciente = searchPacienteById(idPaciente);
         if (paciente != null) {
@@ -486,6 +493,11 @@ public class service {
         return null;
     }
 
+    /**
+     * Método para ver la información de un médico a partir de su ID.
+     * @param idMedico ID del médico.
+     * @return Información del médico.
+     */
     public String consultarMedico(String idMedico) {
         Medico medico = searchMedicoById(idMedico);
         if(medico != null) {
@@ -494,6 +506,12 @@ public class service {
         return null;
     }
 
+    /**
+     * Método para consultar si un médico esta disponible según la fecha.
+     * @param idMedico ID del médico.
+     * @param fecha Fecha a consultar.
+     * @return Si el médico está o no está disponible en esa fecha.
+     */
     public boolean consultarDisponibilidadMedico(String idMedico, LocalDateTime fecha) {
 
         Medico medico = searchMedicoById(idMedico);
@@ -504,6 +522,12 @@ public class service {
         return validarHorarioMedico(medico, fecha);
     }
 
+    /**
+     * Método para consultar si un consultorio está disponible según la fecha.
+     * @param numeroConsultorio Número del consultorio
+     * @param fecha Fecha en la que se consultará la disponibilidad.
+     * @return Si el consultorio está o no está disponible en la fecha consultada.
+     */
     public boolean consultarDisponibilidadConsultorio(String numeroConsultorio, LocalDateTime fecha) {
 
         Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
@@ -515,9 +539,9 @@ public class service {
     }
 
     /**
-     * metodos encargados generar listas de objetos objetos registrados en el sistema
+     * Métodos encargados generar listas de objetos registrados en el sistema
      * <p>
-     *     estos metodos hacen una copia a las listas originales
+     *     Estos métodos hacen una copia a las listas originales
      *     para que al modificar las listas, solo se modifiquen la copie
      *     y que la lista original no se modifique.
      * </p>
