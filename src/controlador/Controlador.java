@@ -6,9 +6,24 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+/**
+ * La clase controlador funciona como intermediario entre la vista y el service
+ * <p>
+ *     Se encarga mayormente de controlar las interacciones entre la vista y
+ *     la capa service. Esta clase recibe las solicitudes o interacciones del
+ *     usuario, las dirige al service, procesa las solicitudes y envia la
+ *     respuesta del service a la vista.
+ * </p>
+ */
 public class Controlador {
     private service service;
+    private Recepcionista recepcionista;
 
+    /**
+     * Constructor de la clase
+     * @param service recibe una instancia de la clase service
+     */
     public Controlador(service service) {
         this.service = service;
     }
@@ -41,15 +56,15 @@ public class Controlador {
     // metodos del medico
 
     public Paciente verPaciente(String idPaciente){
-        return verPaciente(idPaciente);
+        return service.verPaciente(idPaciente);
     }
 
     public Consultorio verConsultorioAsignado(String idMedico){
-        return verConsultorioAsignado(idMedico);
+        return service.verConsultorioAsignado(idMedico);
     }
 
     public boolean atenderCita(String idCita, String diagnostico, String tratamiento, String observaciones){
-        return atenderCita(idCita, diagnostico, tratamiento, observaciones);
+        return service.atenderCita(idCita, diagnostico, tratamiento, observaciones);
     }
 
 //    public boolean registrarDiagnostico(String idCita, String diagnostico){
@@ -69,15 +84,45 @@ public class Controlador {
     }
 
     public Paciente searchPacienteById(String idPaciente){
-        return searchPacienteById(idPaciente);
+        return service.searchPacienteById(idPaciente);
     }
 
     public Medico searchMedicoById(String idMedico){
-        return searchMedicoById(idMedico);
+        return service.searchMedicoById(idMedico);
     }
 
     public Consultorio searchConsultorioByNumero(String numeroConsultorio){
-        return searchConsultorioByNumero(numeroConsultorio);
+        return service.searchConsultorioByNumero(numeroConsultorio);
+    }
+
+    //Métodos de recepcionista
+
+    public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
+        return service.registrarMedico(id, nombre, apellido, telefono, email, password, especialidad);
+    }
+
+    public Paciente registrarPaciente(String id, String nombre, String apellido, String telefono, String email, String password, String historiaClinica, String fechaNacimiento, String tipoSangre, String sexo) {
+        return service.registrarPaciente(id, nombre, apellido, telefono, email, password, historiaClinica, fechaNacimiento, tipoSangre, sexo);
+    }
+
+    public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
+        return service.asignarConsultorioAMedico(idMedico, numeroConsultorio, fecha);
+    }
+
+    public String consultarPaciente(String idPaciente) {
+        return service.consultarPaciente(idPaciente);
+    }
+
+    public String consultarMedico(String idMedico) {
+        return service.consultarMedico(idMedico);
+    }
+
+    public boolean consultarDisponibilidadMedico(String idMedico, LocalDateTime fecha) {
+        return service.consultarDisponibilidadMedico(idMedico, fecha);
+    }
+
+    public boolean consultarDisponibilidadConsultorio(String numeroConsultorio, LocalDateTime fecha) {
+        return service.consultarDisponibilidadConsultorio(numeroConsultorio, fecha);
     }
 
     // listar objetos

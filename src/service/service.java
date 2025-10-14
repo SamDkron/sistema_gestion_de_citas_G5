@@ -67,6 +67,9 @@ public class service {
 //        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
 //    }
 
+
+
+
     /**
      * metodo encargado de generar un id a cada cita nueva que se genere
      */
@@ -74,7 +77,6 @@ public class service {
     private String generadorIdCita(){
         return String.format("CITA-A%07d", contadorCitas++);
     }
-
 
     /**
      * estos metodos se encargan de realizar busquedas
@@ -166,7 +168,7 @@ public class service {
      /**
      * @param medico objeto de clase Medico
      * @param fechaHora hora de la cita nueva
-     * @return true o false debendiendo de la disponibilidad del medico
+     * @return true o false dependiendo de la disponibilidad del medico
      */
 
     public boolean validarHorarioMedico(Medico medico, LocalDateTime fechaHora){
@@ -185,7 +187,7 @@ public class service {
      *
      * @param consultorio objeto de clase Consultorio
      * @param fechaHora hora de la nueva cita
-     * @return treue o false dependiendo de si esta disponible el consultorio en la hora de la cita
+     * @return true o false dependiendo de si esta disponible el consultorio en la hora de la cita
      */
     public boolean validarHorarioConsultorio(Consultorio consultorio, LocalDateTime fechaHora){
         LocalDateTime finalCita = fechaHora.plusMinutes(30);
@@ -336,7 +338,7 @@ public class service {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Paciente:\n");
-        sb.append("Historia clínica del paciente: ");
+        sb.append("Historia clínica del paciente");
         sb.append(String.format("Nombre: %s\n", paciente.nombreCompleto()));
         sb.append(String.format("Historia Clínica: %s\n", paciente.getHistoriaClinica()));
         sb.append(String.format("Grupo Sanguíneo: %s\n", paciente.getTipoSangre()));
@@ -345,7 +347,7 @@ public class service {
         sb.append(String.format("Número de Telefono: %s\n", paciente.getTelefono()));
 
         List<Cita> pacienteCitas = citas.stream()
-                . filter(c -> c.getPaciente().getId().equals(paciente.getId()))
+                .filter(c -> c.getPaciente().getId().equals(paciente.getId()))
                 .filter(c -> c.getEstadoCita() == citaState.COMPLETADA)
                 .sorted(Comparator.comparing(Cita::getFecha).reversed())
                 .collect(Collectors.toList());
@@ -362,7 +364,7 @@ public class service {
         return sb.toString();
     }
 
-    //metodos de medico//
+    //---------------metodos de medico---------------//
 
     /**
      * metodo en el cual el medico puede revisar que paciente va a atender
@@ -445,7 +447,82 @@ public class service {
         return sb.toString();
     }
 
-    //Listar
+    //Metodos de recepcionista//
+
+    public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
+        Medico nuevoMedico = new Medico(id, nombre, apellido, telefono, email, password, especialidad);
+        medicos.add(nuevoMedico);
+        return nuevoMedico;
+    }
+
+    public Paciente registrarPaciente(String id, String nombre, String apellido, String telefono,
+                                      String email, String password, String historiaClinica,
+                                      String fechaNacimiento, String tipoSangre, String sexo) {
+        Paciente nuevoPaciente = new Paciente(id, nombre, apellido, telefono, email, password,
+                historiaClinica, fechaNacimiento, tipoSangre, sexo);
+        pacientes.add(nuevoPaciente);
+        return nuevoPaciente;
+    }
+
+    public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
+
+        Medico medico = searchMedicoById(idMedico);
+        Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
+
+        if(medico != null && consultorio != null && consultarDisponibilidadConsultorio(numeroConsultorio, fecha)
+                && consultarDisponibilidadMedico(idMedico, fecha)) {
+
+            medico.setConsultorioAsignado(numeroConsultorio);
+            return true;
+        }
+        return false;
+    }
+
+    public String consultarPaciente(String idPaciente) {
+        Paciente paciente = searchPacienteById(idPaciente);
+        if (paciente != null) {
+            return paciente.toString();
+        }
+        return null;
+    }
+
+    public String consultarMedico(String idMedico) {
+        Medico medico = searchMedicoById(idMedico);
+        if(medico != null) {
+            return medico.toString();
+        }
+        return null;
+    }
+
+    public boolean consultarDisponibilidadMedico(String idMedico, LocalDateTime fecha) {
+
+        Medico medico = searchMedicoById(idMedico);
+        if(medico == null) {
+            return false;
+        }
+
+        return validarHorarioMedico(medico, fecha);
+    }
+
+    public boolean consultarDisponibilidadConsultorio(String numeroConsultorio, LocalDateTime fecha) {
+
+        Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
+        if(consultorio == null) {
+            return false;
+        }
+
+        return validarHorarioConsultorio(consultorio, fecha);
+    }
+
+    /**
+     * metodos encargados generar listas de objetos objetos registrados en el sistema
+     * <p>
+     *     estos metodos hacen una copia a las listas originales
+     *     para que al modificar las listas, solo se modifiquen la copie
+     *     y que la lista original no se modifique.
+     * </p>
+     * @return
+     */
 
     public List<Paciente> enlistarPacientes(){
         return new ArrayList<>(pacientes);

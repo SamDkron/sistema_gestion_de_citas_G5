@@ -56,6 +56,10 @@ public class DatosEjemplo {
         return pacientes;
     }
 
+    /**
+     * A los medicos creados de ejemplo les asigna unos consultorios
+     * @param medicos recibe los medicos creados de ejemplo
+     */
     public static void asginarConsultoriosMedicosEJ(List<Medico> medicos){
         if(medicos.size() >= 4){
             medicos.get(0).setConsultorioAsignado("1");
