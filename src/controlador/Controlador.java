@@ -67,18 +67,6 @@ public class Controlador {
         return service.atenderCita(idCita, diagnostico, tratamiento, observaciones);
     }
 
-//    public boolean registrarDiagnostico(String idCita, String diagnostico){
-//        return service.registrarDiagnostico(idCita, diagnostico);
-//    }
-//
-//    public boolean registrarTratamiento(String idCita, String tratamiento){
-//        return service.registrarTratamiento(idCita, tratamiento);
-//    }
-//
-//    public boolean realizarObservaciones(String idCita, String observaciones){
-//        return service.realizarObservaciones(idCita, observaciones);
-//    }
-
     public String remitirPaciente(String idCita, String especialidad, String motivo){
         return service.remitirPaciente(idCita, especialidad, motivo);
     }

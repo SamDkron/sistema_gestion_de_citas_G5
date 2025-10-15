@@ -21,7 +21,7 @@ public class Medico extends Usuario {
     private List<Cita> agenda;
 
     /**
-     * Constructor de la clase que crea un medico con toda la informarcion proporcionada.
+     * Constructor de la clase que crea un medico con toda la informacion proporcionada.
      * Hereda atributos de la clase Usuario
      * @param id ID del medico
      * @param nombre Nombre del medico
