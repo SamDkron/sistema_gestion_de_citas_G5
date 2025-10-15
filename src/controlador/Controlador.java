@@ -1,7 +1,7 @@
 package controlador;
 
 import modelo.*;
-import service.service;
+import service.Service;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.List;
  * </p>
  */
 public class Controlador {
-    private service service;
+    private Service service;
     private Recepcionista recepcionista;
 
     /**
      * Constructor de la clase
      * @param service recibe una instancia de la clase service
      */
-    public Controlador(service service) {
+    public Controlador(Service service) {
         this.service = service;
     }
 
@@ -107,6 +107,12 @@ public class Controlador {
 
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
         return service.asignarConsultorioAMedico(idMedico, numeroConsultorio, fecha);
+    }
+
+    public Recepcionista registrarRecepcionista(String id, String nombre, String apellido,
+                                                String telefono, String email, String password,
+                                                String state) {
+        return service.registrarRecepcionista(id, nombre, apellido, telefono, email, password, state);
     }
 
     public String consultarPaciente(String idPaciente) {

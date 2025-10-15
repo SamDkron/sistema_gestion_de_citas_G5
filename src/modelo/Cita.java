@@ -122,7 +122,7 @@ public class Cita {
         sb.append("Fecha: ").append(fechaFormattter.format(this.fecha)).append("\n");
         sb.append("Estado: ").append(this.estadoCita.toString()).append("\n");
         sb.append("Paciente: ").append(this.paciente.nombreCompleto()).append("\n");
-        sb.append("Historia clinica").append(this.paciente.getHistoriaClinica()).append("\n");
+        sb.append("Historia clinica: ").append(this.paciente.getHistoriaClinica()).append("\n");
         sb.append("Medico: Dr(a). ").append(this.medico.nombreCompleto()).append("\n");
         sb.append("Especialidad del medico: ").append(this.medico.getEspecialidad()).append("\n");
         sb.append("Consultorio: ").append(this.consultorio.toString());

@@ -1,7 +1,3 @@
-/**
- * @author Samuel David Dau Fernández, Santiago Duica Plata, Gustavo Daniel Olivos Rodríguez
- */
-
 package service;
 
 import java.time.LocalDateTime;
@@ -20,32 +16,32 @@ import modelo.*;
  * </p>
  */
 
-public class service {
+public class Service {
     private List<Cita> citas;
     private List<Medico> medicos;
     private List<Paciente> pacientes;
     private List<Consultorio> consultorios;
-    private List<Recepcionista> recepcionista;
+    private List<Recepcionista> recepcionistas;
     private int contadorMedicos;
     private int contadorPacientes;
     private int contadorConsultorios;
     private int contadorCitas;
 
     /**
-    * constructor del programa
-    */
-    public service() {
+     * constructor del programa
+     */
+    public Service() {
         this.citas = new ArrayList<>();
         this.medicos = new ArrayList<>();
         this.pacientes = new ArrayList<>();
         this.consultorios = new ArrayList<>();
-        this.recepcionista = new ArrayList<>();
+        this.recepcionistas = new ArrayList<>();
         this.contadorMedicos = 4;
         this.contadorPacientes = 4;
         this.contadorConsultorios = 5;
         this.contadorCitas = 1;
 
-        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
+        this.recepcionistas.addAll(DatosEjemplo.inicializarRecepcionista());
         this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
         this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
         this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
@@ -165,7 +161,7 @@ public class service {
      * Se utiliza para validar el horario o la disponibilidad del medico y del consultorio.
      */
 
-     /**
+    /**
      * @param medico objeto de clase Medico
      * @param fechaHora hora de la cita nueva
      * @return true o false dependiendo de la disponibilidad del medico
@@ -223,7 +219,7 @@ public class service {
                 return m1;
             }
         }
-        for (Recepcionista r1 : recepcionista) {
+        for (Recepcionista r1 : recepcionistas) {
             if (r1.getId().equals(id) && r1.getPassword().equals(password)) {
                 return r1;
             }
@@ -463,6 +459,36 @@ public class service {
         pacientes.add(nuevoPaciente);
         return nuevoPaciente;
     }
+    /** Registra un nuevo recepcionista en el sistema
+ * @param id ID del recepcionista
+ * @param nombre Nombre del recepcionista
+ * @param apellido Apellido del recepcionista
+ * @param telefono Telefono del recepcionista
+ * @param email Email del recepcionista
+ * @param password Contraseña del recepcionista
+ * @param state Turno del recepcionista (Día/Noche)
+ * @return El objeto Recepcionista creado o null si ya existe
+ */
+    public Recepcionista registrarRecepcionista(String id, String nombre, String apellido,
+                                                String telefono, String email, String password,
+                                                String state) {
+
+        for (Recepcionista r : recepcionistas) {
+            if (r.getId().equals(id)) {
+                System.out.println("Ya existe un recepcionista con ese ID");
+                return null;
+            }
+        }
+
+        Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido,
+                telefono, email, password, state);
+
+        recepcionistas.add(nuevoRecepcionista);
+
+        System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
+        return nuevoRecepcionista;
+    }
+
 
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
 

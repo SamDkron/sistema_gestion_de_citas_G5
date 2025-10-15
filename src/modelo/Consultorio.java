@@ -35,5 +35,4 @@ public class Consultorio {
     public String toString() {
         return String.format("Consultorio %s /// Ubicación: %s /// Estado: %s", numero, ubicacion, disponibilidad ? "Disponible" : "Ocupado");
     }
-
 }

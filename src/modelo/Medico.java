@@ -35,7 +35,7 @@ public class Medico extends Usuario {
         super(id, nombre, apellido, telefono, email, password);
         this.especialidad = especialidad;
         this.consultorioAsignado = "";
-        this.agenda = new ArrayList<>(agenda);
+        this.agenda = new ArrayList<>();
     }
 
     /**

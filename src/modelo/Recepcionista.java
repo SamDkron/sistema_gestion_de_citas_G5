@@ -5,7 +5,7 @@
  */
 
 package modelo;
-import service.service;
+import service.Service;
 import java.time.LocalDateTime;
 
 /**

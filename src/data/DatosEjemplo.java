@@ -53,6 +53,7 @@ public class DatosEjemplo {
         pacientes.add(new Paciente("P002", "Juan", "Plata", "777-1002", "jplata@hmail.com", "paciente121", "HC-002", "22/07/1990", "A+", "Masculino"));
         pacientes.add(new Paciente("P003", "Camilo", "Medina", "777-1003", "cmedina@hmail.com", "paciente122", "HC-003", "5/01/2005", "B-", "Masculino"));
         pacientes.add(new Paciente("P004", "Laura", "Fernández", "777-1004", "lfernandez@hmail.com", "paciente123", "HC-004", "10/11/1978", "B+", "Femenino"));
+        pacientes.add(new Paciente("1234", "Samuel", "Baus", "12345678", "sbaus@unimag", "1234", "HC-005","5/01/2005", "B-", "Masculino"));
         return pacientes;
     }
 
