@@ -25,3 +25,8 @@ Este programa en un sistema básico de gestión de citas para una eps. En este s
 
 + RECEPCIONISTA: El rol recepcionista
 
+## Autores
+
+- Samuel David Dau Fernández
+- Gustavo Daniel Olivos Rodriguez
+- Santiago Duica Plata
