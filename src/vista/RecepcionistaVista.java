@@ -99,7 +99,7 @@ public class RecepcionistaVista extends JFrame {
         panel.add(crearBotonOpcion("Consultar Paciente", "📋", e -> consultarPaciente()), gbc);
 
         gbc.gridx = 1;
-        panel.add(crearBotonOpcion("Consultar Médico", "🩺", e -> consultarMedico()), gbc);
+        panel.add(crearBotonOpcion("Consultar Médico", "👨‍⚕️", e -> consultarMedico()), gbc);
 
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Ver Todas las Citas", "📅", e -> verTodasCitas()), gbc);

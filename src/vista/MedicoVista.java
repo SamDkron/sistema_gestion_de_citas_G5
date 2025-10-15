@@ -93,7 +93,7 @@ public class MedicoVista extends JFrame {
         panel.add(crearBotonOpcion("Ver Mi Agenda", "📅", e -> verAgenda()), gbc);
 
         gbc.gridx = 1;
-        panel.add(crearBotonOpcion("Atender Cita", "🩺", e -> atenderCita()), gbc);
+        panel.add(crearBotonOpcion("Atender Cita", "💪", e -> atenderCita()), gbc);
 
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Ver Paciente", "👤", e -> verPaciente()), gbc);
