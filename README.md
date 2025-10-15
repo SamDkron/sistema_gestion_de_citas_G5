@@ -21,7 +21,7 @@ Este programa en un sistema básico de gestión de citas para una eps. En este s
 
 + MÉDICO: El rol médico es el encargado de atender a los pacientes
 
-+ PACIENTE:
++ PACIENTE: El rol paciente
 
-+ RECEPCIONISTA:
++ RECEPCIONISTA: El rol recepcionista
 
