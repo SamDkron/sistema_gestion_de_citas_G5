@@ -1,7 +1,3 @@
-/**
- * @author Samuel David Dau Fernández, Santiago Duica Plata, Gustavo Daniel Olivos Rodríguez
- */
-
 package service;
 
 import java.time.LocalDateTime;
@@ -15,60 +11,41 @@ import modelo.*;
 /**
  * Archivo 'service' que contiene toda la logica de negocio del programa.
  * <p>
- *     aca esta la logica de la mayoria de los metodos que fueron ideados en los diagramas y
+ *     Acá está la lógica de la mayoria de los metodos que fueron ideados en los diagramas y
  *     gestiona las citas, pacientes, medicos, recepcionistas y consultorios
  * </p>
  */
 
-public class service {
+public class Service {
     private List<Cita> citas;
     private List<Medico> medicos;
     private List<Paciente> pacientes;
     private List<Consultorio> consultorios;
-    private List<Recepcionista> recepcionista;
+    private List<Recepcionista> recepcionistas;
     private int contadorMedicos;
     private int contadorPacientes;
     private int contadorConsultorios;
     private int contadorCitas;
 
     /**
-    * constructor del programa
-    */
-    public service() {
+     * constructor del programa
+     */
+    public Service() {
         this.citas = new ArrayList<>();
         this.medicos = new ArrayList<>();
         this.pacientes = new ArrayList<>();
         this.consultorios = new ArrayList<>();
-        this.recepcionista = new ArrayList<>();
+        this.recepcionistas = new ArrayList<>();
         this.contadorMedicos = 4;
         this.contadorPacientes = 4;
         this.contadorConsultorios = 5;
         this.contadorCitas = 1;
 
-        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
+        this.recepcionistas.addAll(DatosEjemplo.inicializarRecepcionista());
         this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
         this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
         this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-
-//        if(ejemplos) {
-//            cargarEjemplos();
-//        }
-
     }
-
-//    public service() {
-//        this(true);
-//    }
-//
-//    public void cargarEjemplos(){
-//        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
-//        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
-//        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
-//        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-//    }
-
-
-
 
     /**
      * metodo encargado de generar un id a cada cita nueva que se genere
@@ -165,7 +142,7 @@ public class service {
      * Se utiliza para validar el horario o la disponibilidad del medico y del consultorio.
      */
 
-     /**
+    /**
      * @param medico objeto de clase Medico
      * @param fechaHora hora de la cita nueva
      * @return true o false dependiendo de la disponibilidad del medico
@@ -180,6 +157,8 @@ public class service {
                     LocalDateTime inicioCitaCreada = cita.getFecha();
                     LocalDateTime finCitaCreada = inicioCitaCreada.plusMinutes(30);
                     return fechaHora.isBefore(finCitaCreada) && finalCita.isAfter(inicioCitaCreada);
+                    //Devuelve true si se cumple que la hora de la nueva cita se solape con alguna de las citas que ya estan en la lista
+                    // y al estar en el noneMatch, devuelve false
                 });
     }
 
@@ -223,7 +202,7 @@ public class service {
                 return m1;
             }
         }
-        for (Recepcionista r1 : recepcionista) {
+        for (Recepcionista r1 : recepcionistas) {
             if (r1.getId().equals(id) && r1.getPassword().equals(password)) {
                 return r1;
             }
@@ -463,7 +442,43 @@ public class service {
         pacientes.add(nuevoPaciente);
         return nuevoPaciente;
     }
+    /** Registra un nuevo recepcionista en el sistema
+ * @param id ID del recepcionista
+ * @param nombre Nombre del recepcionista
+ * @param apellido Apellido del recepcionista
+ * @param telefono Telefono del recepcionista
+ * @param email Email del recepcionista
+ * @param password Contraseña del recepcionista
+ * @param state Turno del recepcionista (Día/Noche)
+ * @return El objeto Recepcionista creado o null si ya existe
+ */
+    public Recepcionista registrarRecepcionista(String id, String nombre, String apellido,
+                                                String telefono, String email, String password,
+                                                String state) {
 
+        for (Recepcionista r : recepcionistas) {
+            if (r.getId().equals(id)) {
+                System.out.println("Ya existe un recepcionista con ese ID");
+                return null;
+            }
+        }
+
+        Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido,
+                telefono, email, password, state);
+
+        recepcionistas.add(nuevoRecepcionista);
+
+        System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
+        return nuevoRecepcionista;
+    }
+
+    /**
+     * Método para asignarle un consultorio a un médico
+     * @param idMedico ID del médico
+     * @param numeroConsultorio Numero del consultorio
+     * @param fecha Fecha de la cita
+     * @return
+     */
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
 
         Medico medico = searchMedicoById(idMedico);
