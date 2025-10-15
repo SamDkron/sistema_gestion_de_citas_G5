@@ -370,6 +370,7 @@ public class Service {
             cita.setDiagnostico(diagnostico);
             cita.setTratamiento(tratamiento);
             cita.setObservaciones(observaciones);
+            cita.completar();
             return true;
         }
         return false;
