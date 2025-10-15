@@ -70,6 +70,7 @@ public class Consultorio {
     @Override
     public String toString() {
         return String.format("Consultorio %s /// Ubicación: %s /// Estado: %s", numero, ubicacion, disponibilidad ? "Disponible" : "Ocupado");
+        //si disponibilidad es true devuelve Disponible, sino devuelve Ocupado
     }
 
 }
