@@ -1,11 +1,9 @@
 package service;
 
+import data.DatosEjemplo;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import data.DatosEjemplo;
 import modelo.*;
 
 /**
@@ -46,25 +44,7 @@ public class Service {
         this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
         this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
 
-//        if(ejemplos) {
-//            cargarEjemplos();
-//        }
-
     }
-
-//    public service() {
-//        this(true);
-//    }
-//
-//    public void cargarEjemplos(){
-//        this.recepcionista.addAll(DatosEjemplo.inicializarRecepcionista());
-//        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
-//        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
-//        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-//    }
-
-
-
 
     /**
      * metodo encargado de generar un id a cada cita nueva que se genere
@@ -387,6 +367,7 @@ public class Service {
             cita.setDiagnostico(diagnostico);
             cita.setTratamiento(tratamiento);
             cita.setObservaciones(observaciones);
+            cita.completar();
             return true;
         }
         return false;
