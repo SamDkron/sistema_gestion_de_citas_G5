@@ -433,6 +433,35 @@ public class Service {
     }
 
     /**
+     * Registra un nuevo recepcionista en el sistema
+     * @param id ID del recepcionista
+     * @param nombre Nombre del recepcionista
+     * @param apellido Apellido del recepcionista
+     * @param telefono Telefono del recepcionista
+     * @param email Email del recepcionista
+     * @param password Contraseña del recepcionista
+     * @param state Turno del recepcionista (Día/Noche)
+     * @return El objeto Recepcionista creado o null si ya existe
+     */
+    public Recepcionista registrarRecepcionista(String id, String nombre, String apellido,
+                                                String telefono, String email, String password,
+                                                String state) {
+        for (Recepcionista r : recepcionistas) {
+            if (r.getId().equals(id)) {
+                System.out.println("Ya existe un recepcionista con ese ID");
+                return null;
+            }
+        }
+        Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido,
+                telefono, email, password, state);
+
+        recepcionistas.add(nuevoRecepcionista);
+
+        System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
+        return nuevoRecepcionista;
+    }
+
+    /**
      * Método que crea un nuevo paciente y lo añade a la lista de los demás.
      * @param id ID del paciente.
      * @param nombre Nombre del paciente.

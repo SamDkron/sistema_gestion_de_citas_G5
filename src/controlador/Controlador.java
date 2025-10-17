@@ -93,6 +93,7 @@ public class Controlador {
         return service.registrarPaciente(id, nombre, apellido, telefono, email, password, historiaClinica, fechaNacimiento, tipoSangre, sexo);
     }
 
+
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
         return service.asignarConsultorioAMedico(idMedico, numeroConsultorio, fecha);
     }
