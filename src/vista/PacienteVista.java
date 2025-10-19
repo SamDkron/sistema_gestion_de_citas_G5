@@ -93,7 +93,7 @@ public class PacienteVista extends JFrame {
         panel.add(crearBotonOpcion("Reservar Cita", "📅", e -> reservarCita()), gbc);
 
         gbc.gridx = 1;
-        panel.add(crearBotonOpcion("Cancelar Cita", "❌", e -> cancelarCita()), gbc);
+        panel.add(crearBotonOpcion("Cancelar Cita", "X", e -> cancelarCita()), gbc);
 
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Reprogramar Cita", "🔄", e -> reprogramarCita()), gbc);
@@ -139,7 +139,7 @@ public class PacienteVista extends JFrame {
     }
 
     private void reservarCita() {
-        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
 
         JTextField txtIdMedico = new JTextField();
         JTextField txtConsultorio = new JTextField();
@@ -177,12 +177,12 @@ public class PacienteVista extends JFrame {
                             "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this,
-                            "Error al reservar la cita. Verifica los datos.",
+                            "Error al reservar la cita.",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Error en el formato de fecha. Use: dd/MM/yyyy HH:mm",
+                        "Error: " + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

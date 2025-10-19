@@ -104,7 +104,7 @@ public class MedicoVista extends JFrame {
         panel.add(crearBotonOpcion("Remitir Paciente", "📋", e -> remitirPaciente()), gbc);
 
         gbc.gridx = 1;
-        panel.add(crearBotonOpcion("Consultorio Asignado", "🏥", e -> verConsultorio()), gbc);
+        panel.add(crearBotonOpcion("Cancelar Cita", "X", e -> cancelarCita()), gbc);
 
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Historial de Citas", "📊", e -> verHistorial()), gbc);
@@ -210,6 +210,23 @@ public class MedicoVista extends JFrame {
                     JOptionPane.showMessageDialog(this, resultado, "Remisión",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
+            }
+        }
+    }
+
+    private void cancelarCita() {
+        String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
+        if (idCita != null && !idCita.trim().isEmpty()) {
+            boolean exito = controlador.cancelarCita(idCita, medico.getId());
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this,
+                        "Cita cancelada exitosamente",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cancelar la cita. Verifica el ID.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

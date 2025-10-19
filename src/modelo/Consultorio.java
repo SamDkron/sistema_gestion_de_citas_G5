@@ -69,7 +69,10 @@ public class Consultorio {
      */
     @Override
     public String toString() {
-        return String.format("Consultorio %s /// Ubicación: %s /// Estado: %s", numero, ubicacion, disponibilidad ? "Disponible" : "Ocupado");
-        //si disponibilidad es true devuelve Disponible, sino devuelve Ocupado
+        StringBuilder sb = new StringBuilder();
+        sb.append("Consultorio: ").append(numero).append("\n");
+        sb.append("Ubicación: ").append(ubicacion).append("\n");
+        sb.append("Estado: ").append(disponibilidad ? "Disponible" : "Ocupado").append("\n");
+        return sb.toString();
     }
 }

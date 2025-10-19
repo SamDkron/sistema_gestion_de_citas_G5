@@ -80,6 +80,13 @@ public class Paciente extends Usuario {
      */
     @Override
     public String toString() {
-        return String.format("Paciente - %s /// HC: %s /// Nacimiento: %s /// Grupo Sanguíneo: %s /// Sexo: %s", super.toString(), historiaClinica, fechaNacimiento, tipoSangre, sexo);
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== PACIENTE ===\n");
+        sb.append(super.toString()).append("\n");
+        sb.append("Historia Clínica: ").append(historiaClinica).append("\n");
+        sb.append("Fecha de Nacimiento: ").append(fechaNacimiento).append("\n");
+        sb.append("Grupo Sanguíneo: ").append(tipoSangre).append("\n");
+        sb.append("Sexo: ").append(sexo).append("\n");
+        return sb.toString();
     }
 }

@@ -193,6 +193,7 @@ public class Cita {
     public String toString() {
         DateTimeFormatter fechaFormattter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         StringBuilder sb = new StringBuilder();
+        sb.append("ID Cita: ").append(this.id).append("\n");
         sb.append("Fecha: ").append(fechaFormattter.format(this.fecha)).append("\n");
         sb.append("Estado: ").append(this.estadoCita.toString()).append("\n");
         sb.append("Paciente: ").append(this.paciente.nombreCompleto()).append("\n");
@@ -200,7 +201,7 @@ public class Cita {
         sb.append("Medico: Dr(a). ").append(this.medico.nombreCompleto()).append("\n");
         sb.append("Especialidad del medico: ").append(this.medico.getEspecialidad()).append("\n");
         sb.append("Consultorio: ").append(this.consultorio.toString());
-        sb.append("Motivos: ").append(this.motivo).append("\n");
+        sb.append("Motivos: ").append(this.motivo);
 
         if(!diagnostico.isEmpty()){
             sb.append("Diagnostico: ").append(this.diagnostico).append("\n");

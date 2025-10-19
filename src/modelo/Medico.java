@@ -92,6 +92,11 @@ public class Medico extends Usuario {
      */
     @Override
     public String toString() {
-        return String.format("Médico - %s /// Especialidad: %s /// Consultorio: %s", super.toString(), especialidad, consultorioAsignado != null ? consultorioAsignado : "Sin asignar");
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== MÉDICO ===\n");
+        sb.append(super.toString()).append("\n");
+        sb.append("Especialidad: ").append(especialidad).append("\n");
+        sb.append("Consultorio Asignado: ").append(consultorioAsignado != null && !consultorioAsignado.isEmpty() ? consultorioAsignado : "Sin asignar").append("\n");
+        return sb.toString();
     }
 }

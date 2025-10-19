@@ -10,7 +10,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             Service service = new Service();
             Controlador controlador = new Controlador(service);
-            Vista vista = new Vista(controlador); // <-- Aquí debes pasar el controlador
+            Vista vista = new Vista(controlador);
             vista.setVisible(true);
         });
     }

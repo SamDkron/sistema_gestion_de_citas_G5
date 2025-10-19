@@ -234,6 +234,11 @@ public class Service {
             throw new IllegalArgumentException("ERROR!. Alguno de los datos ingresados no es válido.");
         }
 
+        // Si el médico no tiene consultorio asignado, asignarle el seleccionado
+        if(medico.getConsultorioAsignado() == null || medico.getConsultorioAsignado().isEmpty()){
+            medico.setConsultorioAsignado(numeroConsultorio);
+        }
+
         if(!validarHorarioMedico(medico, fecha)){
             throw new IllegalArgumentException("El médico no está disponible en la fecha y hora seleccionadas.");
         }
@@ -247,7 +252,6 @@ public class Service {
         citas.add(nuevaCita);
         medico.agregarCita(nuevaCita);
         return nuevaCita;
-
     }
 
     /**
@@ -362,7 +366,8 @@ public class Service {
     public boolean atenderCita(String idCita, String diagnostico, String tratamiento, String observaciones) {
         Cita cita = searchCitaById(idCita);
 
-        if(cita != null && cita.getEstadoCita() == citaState.CONFIRMADA){
+        if(cita != null && (cita.getEstadoCita() == citaState.CONFIRMADA ||
+                cita.getEstadoCita() == citaState.PENDIENTE)) {
             cita.iniciarAtencion();
             cita.setDiagnostico(diagnostico);
             cita.setTratamiento(tratamiento);
@@ -492,13 +497,10 @@ public class Service {
      * @return Si se le asignó el consultorio o si no se pudo asignar.
      */
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
-
         Medico medico = searchMedicoById(idMedico);
         Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
 
-        if(medico != null && consultorio != null && consultarDisponibilidadConsultorio(numeroConsultorio, fecha)
-                && consultarDisponibilidadMedico(idMedico, fecha)) {
-
+        if(medico != null && consultorio != null) {
             medico.setConsultorioAsignado(numeroConsultorio);
             return true;
         }
