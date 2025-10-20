@@ -1,5 +1,7 @@
 /**
- * @author Samuel David Dau Fernández, Santiago Duica Plata, Gustavo Daniel Olivos Rodríguez
+ * @author Samuel David Dau Fernández
+ * @author Santiago Duica Plata
+ * @author Gustavo Daniel Olivos Rodríguez
  */
 
 package data;

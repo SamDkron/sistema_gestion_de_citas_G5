@@ -457,8 +457,7 @@ public class Service {
                 return null;
             }
         }
-        Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido,
-                telefono, email, password, state);
+        Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido, telefono, email, password, state);
 
         recepcionistas.add(nuevoRecepcionista);
 
