@@ -437,7 +437,7 @@ public class Service {
         Paciente paciente = cita.getPaciente();
         Consultorio consultorioAsignado = null;
         LocalDateTime propuesta = LocalDateTime.now().plusHours(1);
-        int minutos = propuesta.getMinute() < 30 ? 0 : 30;
+        int minutos = propuesta.getMinute() < 30 ? 0 : 30; // si los minutos tienen un valor menor que 30, se redondea a 30, si no se rendondea a cero
         propuesta = propuesta.withMinute(minutos).withSecond(0).withNano(0);
         LocalDateTime limiteHorario = propuesta.plusDays(30);
 
@@ -454,14 +454,15 @@ public class Service {
 
                 if(consultorioAsignado != null){
                     String idNuevaCita = generadorIdCita();
-                    String motivoRemision = "remimitido a: " + especialidad + "por: " + motivo;
+                    String motivoRemision = "remitido a: " + especialidad + " por: " + motivo;
                     Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivoRemision, propuesta);
                     citas.add(nuevaCita);
                     medicoAsignado.agregarCita(nuevaCita);
 
                     sb.append("\n ======= Cita creada para remision de paciente =======:  \n");
-                    sb.append(nuevaCita.toString()).append("\n");
+                    sb.append(nuevaCita).append("\n"); // automaticamente se llama al metodo toString
                     creada = true;
+                    cita.cancelarCita();
                     break;
                     //si logró agendar una cita, rompe el ciclo enseguida
                 }

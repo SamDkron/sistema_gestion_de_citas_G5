@@ -201,7 +201,7 @@ public class Cita {
         sb.append("Medico: Dr(a). ").append(this.medico.nombreCompleto()).append("\n");
         sb.append("Especialidad del medico: ").append(this.medico.getEspecialidad()).append("\n");
         sb.append("Consultorio: ").append(this.consultorio.toString());
-        sb.append("Motivos: ").append(this.motivo);
+        sb.append("Motivos: ").append(motivo).append("\n");
 
         if(!diagnostico.isEmpty()){
             sb.append("Diagnostico: ").append(this.diagnostico).append("\n");
