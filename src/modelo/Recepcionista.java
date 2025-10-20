@@ -5,8 +5,6 @@
  */
 
 package modelo;
-import service.Service;
-import java.time.LocalDateTime;
 
 /**
  * Clase que representa al recepcionista en el sistema medico

@@ -428,6 +428,48 @@ public class Service {
         for(Medico m : especialistas){
             sb.append(String.format("Dr(a). %s / Consultorio: %s\n  / Especialidad: %s\n" + m.nombreCompleto() + m.getConsultorioAsignado() + m.getEspecialidad()));
         }
+
+        boolean creada = false;
+        Medico medicoAsignado = especialistas.get(0);
+        Paciente paciente = cita.getPaciente();
+        Consultorio consultorioAsignado = null;
+        LocalDateTime propuesta = LocalDateTime.now().plusHours(1);
+        int minutos = propuesta.getMinute() < 30 ? 0 : 30;
+        propuesta = propuesta.withMinute(minutos).withSecond(0).withNano(0);
+        LocalDateTime limiteHorario = propuesta.plusDays(30);
+
+        while(!creada && !propuesta.isAfter(limiteHorario)){
+            if(validarHorarioMedico(medicoAsignado, propuesta)){
+                if(consultorioAsignado == null || !validarHorarioConsultorio(consultorioAsignado, propuesta)){
+                    for(Consultorio c: consultorios){
+                        if(validarHorarioConsultorio(c, propuesta)){
+                            consultorioAsignado = c;
+                            break;
+                        }
+                    }
+                }
+
+                if(consultorioAsignado != null){
+                    String idNuevaCita = generadorIdCita();
+                    String motivoRemision = "remimitido a: " + especialidad + "por: " + motivo;
+                    Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivoRemision, propuesta);
+                    citas.add(nuevaCita);
+                    medicoAsignado.agregarCita(nuevaCita);
+
+                    sb.append("\n ======= Cita creada para remision de paciente =======:  \n");
+                    sb.append(nuevaCita.toString()).append("\n");
+                    creada = true;
+                    break;
+                    //si logró agendar una cita, rompe el ciclo enseguida
+                }
+            }
+            propuesta = propuesta.plusMinutes(30); // si no logra agendar cita en el horario, suma 30 minutos mas y vuelva a iterar hasta que encuentre un horario libre
+        }
+
+        if(!creada) {
+            sb.append("\n No se encontro un horario disponible con algun especialista en los proximos 30 dias. \n");
+        }
+
         return sb.toString();
     }
 
