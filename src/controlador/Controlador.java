@@ -133,6 +133,8 @@ public class Controlador {
         return service.enlistarConsultorios();
     }
 
+    public String obtenerDetalleConsultorios() { return service.obtenerDetalleConsultorios(); }
+
     public List<Cita> enlistarCitas(){
         return service.enlistarCitas();
     }

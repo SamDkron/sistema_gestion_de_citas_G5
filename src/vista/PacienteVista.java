@@ -26,11 +26,9 @@ public class PacienteVista extends JFrame {
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(152, 251, 152));
 
-        // Panel superior con información del paciente
         JPanel panelInfo = crearPanelInformacion();
         panelPrincipal.add(panelInfo, BorderLayout.NORTH);
 
-        // Panel central con opciones
         JPanel panelOpciones = crearPanelOpciones();
         panelPrincipal.add(panelOpciones, BorderLayout.CENTER);
 
@@ -98,7 +96,6 @@ public class PacienteVista extends JFrame {
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Reprogramar Cita", "🔄", e -> reprogramarCita()), gbc);
 
-        // Segunda fila
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(crearBotonOpcion("Ver Mis Citas", "📋", e -> verMisCitas()), gbc);

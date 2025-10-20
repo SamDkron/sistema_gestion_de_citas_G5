@@ -2,7 +2,9 @@ package service;
 
 import data.DatosEjemplo;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import modelo.*;
 
@@ -565,6 +567,42 @@ public class Service {
         }
 
         return validarHorarioConsultorio(consultorio, fecha);
+    }
+
+    public String obtenerDetalleConsultorios() {
+        StringBuilder sb = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        for (Consultorio consultorio : consultorios) {
+            sb.append("Consultorio: ").append(consultorio.getNumero()).append("\n");
+            sb.append("Ubicación: ").append(consultorio.getUbicacion()).append("\n");
+            sb.append("Estado: ").append(consultorio.isDisponibilidad() ? "Disponible" : "Ocupado").append("\n");
+
+            // Buscar citas programadas en este consultorio
+            List<Cita> citasConsultorio = citas.stream()
+                    .filter(c -> c.getConsultorio().getNumero().equals(consultorio.getNumero()))
+                    .filter(c -> c.getEstadoCita() != citaState.CANCELADA && c.getEstadoCita() != citaState.COMPLETADA)
+                    .filter(c -> c.getFecha().isAfter(LocalDateTime.now())) // Solo citas futuras
+                    .sorted(Comparator.comparing(Cita::getFecha))
+                    .collect(Collectors.toList());
+
+            if (!citasConsultorio.isEmpty()) {
+                sb.append("\nHorarios Ocupados:\n");
+                for (Cita cita : citasConsultorio) {
+                    LocalDateTime inicio = cita.getFecha();
+                    LocalDateTime fin = inicio.plusMinutes(30);
+                    sb.append("  • ").append(formatter.format(inicio))
+                            .append(" - ").append(fin.format(DateTimeFormatter.ofPattern("HH:mm")))
+                            .append(" (Dr(a). ").append(cita.getMedico().nombreCompleto()).append(")\n");
+                }
+            } else {
+                sb.append("\nNo hay citas programadas.\n");
+            }
+
+            sb.append("\n").append("-".repeat(70)).append("\n");
+        }
+
+        return sb.toString();
     }
 
     /**
