@@ -70,9 +70,9 @@ public class Consultorio {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Consultorio: ").append(numero).append("\n");
-        sb.append("Ubicación: ").append(ubicacion).append("\n");
-        sb.append("Estado: ").append(disponibilidad ? "Disponible" : "Ocupado").append("\n");
+        sb.append(numero).append("\n");
+        sb.append("Ubicación: ").append(ubicacion).append(" ");
+        sb.append("~~~ Estado: ").append(disponibilidad ? "Disponible" : "Ocupado").append("\n");
         return sb.toString();
     }
 }

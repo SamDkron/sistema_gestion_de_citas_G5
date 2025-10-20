@@ -1,6 +1,6 @@
 ## SISTEMA DE GESTIÓN DE CITAS DE UNA EPS
 
-Este programa en un sistema básico de gestión de citas para una eps. En este sistema manejamos 3 tipos de usuario: Paciente, Médico y Recepcionista; donde cada vista tiene su menú. El propósito del programa es contribuir al acceso a la salud por medio de un aplicativo fácil de usar e intuitivo para mejorar el sistema de atención al paciente de cualquier eps.
+Este programa en un sistema básico de gestión de citas para una eps. En este sistema manejamos 3 tipos de usuario: Paciente, Médico y Recepcionista; donde cada vista tiene su menú. El propósito del programa es contribuir al acceso a la salud por medio de un aplicativo fácil de usar e intuitivo para mejorar el sistema de atención al paciente dentro de la EPS.
 
 ## REQUISITOS
 
@@ -19,11 +19,13 @@ Este programa en un sistema básico de gestión de citas para una eps. En este s
 
 ## ROLES Y FUNCIONES BÁSICAS
 
-+ MÉDICO: El rol médico es el encargado de atender a los pacientes
++ MÉDICO: El rol médico es el encargado de atender a los pacientes, dictar tratamientos, realizar diagnósticos y observaciones. Asimismo, si es necesario los médicos podrán remitir a los pacientes a otras especialidades
 
-+ PACIENTE: El rol paciente
 
-+ RECEPCIONISTA: El rol recepcionista
++ PACIENTE: El rol paciente es el encargado de reservar sus citas y asistir a ellas. Además, también podrá consultar detalles de los médicos y sus horarios
+
+
++ RECEPCIONISTA: El rol recepcionista es el encargado de registrar pacientes y médicos, consultar detalles de estos mismos y enlistarlos. También es el encargado de asignarle consultorios a los médicos en un día
 
 ## Autores
 

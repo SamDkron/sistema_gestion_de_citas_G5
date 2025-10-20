@@ -423,14 +423,6 @@ public class Service {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("REMITIR PACIENTE A ESPECIALISTA");
-        sb.append(String.format("Paciente: %s\n", cita.getPaciente().nombreCompleto()));
-        sb.append(String.format("Motivo: %s\n\n", motivo));
-        sb.append("Especialistas: " + especialistas + "\n");
-        for(Medico m : especialistas){
-            sb.append(String.format("Dr(a). %s / Consultorio: %s\n  / Especialidad: %s\n",
-                    m.nombreCompleto(), m.getConsultorioAsignado(), m.getEspecialidad()));
-        }
 
         boolean creada = false;
         Medico medicoAsignado = especialistas.get(0);
@@ -454,12 +446,12 @@ public class Service {
 
                 if(consultorioAsignado != null){
                     String idNuevaCita = generadorIdCita();
-                    String motivoRemision = "remimitido a: " + especialidad + "por: " + motivo;
+                    String motivoRemision = "\nRemimitido a: " + especialidad + " por " + motivo;
                     Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivoRemision, propuesta);
                     citas.add(nuevaCita);
                     medicoAsignado.agregarCita(nuevaCita);
 
-                    sb.append("\n ======= Cita creada para remision de paciente =======:  \n");
+                    sb.append("\n ======= Cita creada para remision de paciente =======  \n");
                     sb.append(nuevaCita.toString()).append("\n");
                     creada = true;
                     break;
