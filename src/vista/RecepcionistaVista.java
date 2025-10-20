@@ -26,11 +26,9 @@ public class RecepcionistaVista extends JFrame {
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(255, 218, 185));
 
-        // Panel superior con información del recepcionista
         JPanel panelInfo = crearPanelInformacion();
         panelPrincipal.add(panelInfo, BorderLayout.NORTH);
 
-        // Panel central con opciones
         JPanel panelOpciones = crearPanelOpciones();
         panelPrincipal.add(panelOpciones, BorderLayout.CENTER);
 
@@ -82,7 +80,6 @@ public class RecepcionistaVista extends JFrame {
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        // Primera fila
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(crearBotonOpcion("Registrar Médico", "👨‍⚕️", e -> registrarMedico()), gbc);
@@ -93,7 +90,6 @@ public class RecepcionistaVista extends JFrame {
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Asignar Consultorio", "🏥", e -> asignarConsultorio()), gbc);
 
-        // Segunda fila
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(crearBotonOpcion("Consultar Paciente", "📋", e -> consultarPaciente()), gbc);
@@ -104,7 +100,6 @@ public class RecepcionistaVista extends JFrame {
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Ver Todas las Citas", "📅", e -> verTodasCitas()), gbc);
 
-        // Tercera fila
         gbc.gridx = 0;
         gbc.gridy = 2;
         panel.add(crearBotonOpcion("Listar Médicos", "📝", e -> listarMedicos()), gbc);
@@ -413,14 +408,12 @@ public class RecepcionistaVista extends JFrame {
     private void listarConsultorios() {
         StringBuilder consultorios = new StringBuilder("CONSULTORIOS DEL SISTEMA\n\n");
 
-        java.util.List<Consultorio> listaConsultorios = controlador.enlistarConsultorios();
+        String detalleConsultorios = controlador.obtenerDetalleConsultorios();
 
-        if (listaConsultorios.isEmpty()) {
+        if (detalleConsultorios.isEmpty()) {
             consultorios.append("No hay consultorios registrados.");
         } else {
-            for (Consultorio consultorio : listaConsultorios) {
-                consultorios.append(consultorio.toString()).append("\n").append("-".repeat(70)).append("\n");
-            }
+            consultorios.append(detalleConsultorios);
         }
 
         JTextArea textArea = new JTextArea(consultorios.toString());
@@ -428,7 +421,7 @@ public class RecepcionistaVista extends JFrame {
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
 
         JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(700, 400));
+        scrollPane.setPreferredSize(new Dimension(800, 500));
 
         JOptionPane.showMessageDialog(this, scrollPane,
                 "Lista de Consultorios", JOptionPane.INFORMATION_MESSAGE);

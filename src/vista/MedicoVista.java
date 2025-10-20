@@ -24,11 +24,9 @@ public class MedicoVista extends JFrame {
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(135, 206, 250));
 
-        // Panel superior con información del médico
         JPanel panelInfo = crearPanelInformacion();
         panelPrincipal.add(panelInfo, BorderLayout.NORTH);
 
-        // Panel central con opciones
         JPanel panelOpciones = crearPanelOpciones();
         panelPrincipal.add(panelOpciones, BorderLayout.CENTER);
 
@@ -87,7 +85,6 @@ public class MedicoVista extends JFrame {
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        // Primera fila
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(crearBotonOpcion("Ver Mi Agenda", "📅", e -> verAgenda()), gbc);
@@ -98,7 +95,6 @@ public class MedicoVista extends JFrame {
         gbc.gridx = 2;
         panel.add(crearBotonOpcion("Historia Clínica", "📋", e -> verHistoriaClinicaPaciente()), gbc);
 
-        // Segunda fila
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(crearBotonOpcion("Remitir Paciente", "📋", e -> remitirPaciente()), gbc);

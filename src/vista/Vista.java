@@ -25,17 +25,14 @@ public class Vista extends JFrame {
         cardLayout = new CardLayout();
         panelPrincipal = new JPanel(cardLayout);
 
-        // Crear los diferentes paneles
         panelPrincipal.add(crearPanelBienvenida(), "BIENVENIDA");
         panelPrincipal.add(crearPanelSeleccionTipo("REGISTRO"), "SELECCION_REGISTRO");
         panelPrincipal.add(crearPanelSeleccionTipo("LOGIN"), "SELECCION_LOGIN");
 
-        // Paneles de registro
         panelPrincipal.add(crearPanelRegistroMedico(), "FORM_REGISTRO_MEDICO");
         panelPrincipal.add(crearPanelRegistroPaciente(), "FORM_REGISTRO_PACIENTE");
         panelPrincipal.add(crearPanelRegistroRecepcionista(), "FORM_REGISTRO_RECEPCIONISTA");
 
-        // Paneles de login
         panelPrincipal.add(crearPanelLogin("MEDICO"), "FORM_LOGIN_MEDICO");
         panelPrincipal.add(crearPanelLogin("PACIENTE"), "FORM_LOGIN_PACIENTE");
         panelPrincipal.add(crearPanelLogin("RECEPCIONISTA"), "FORM_LOGIN_RECEPCIONISTA");
@@ -54,8 +51,8 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 0, 50, 0);
 
-        JLabel bienvenida = new JLabel("¡Te damos la bienvenida a Daus EPS!");
-        bienvenida.setFont(new Font("Segoe UI", Font.BOLD, 50));
+        JLabel bienvenida = new JLabel("¡Te damos la bienvenida a Baus EPS!");
+        bienvenida.setFont(new Font("Segoe UI", Font.BOLD, 60));
         bienvenida.setForeground(Color.WHITE);
         panel.add(bienvenida, gbc);
 
@@ -259,10 +256,8 @@ public class Vista extends JFrame {
 
         btnRegistrar.addActionListener(e -> {
             if (validarCampos(txtId, txtNombre, txtApellido, txtTelefono, txtEmail, txtPassword, txtFechaNacimiento)) {
-                // Generar historia clínica automáticamente
                 String historiaClinica = "HC-" + txtId.getText().trim();
 
-                // Enviar datos al controlador
                 Paciente paciente = controlador.registrarPaciente(
                         txtId.getText().trim(),
                         txtNombre.getText().trim(),
@@ -351,7 +346,6 @@ public class Vista extends JFrame {
 
         btnRegistrar.addActionListener(e -> {
             if (validarCampos(txtId, txtNombre, txtApellido, txtTelefono, txtEmail, txtPassword)) {
-                // Enviar datos al controlador
                 Recepcionista recepcionista = controlador.registrarRecepcionista(
                         txtId.getText().trim(),
                         txtNombre.getText().trim(),
@@ -463,11 +457,9 @@ public class Vista extends JFrame {
                         "Por favor completa todos los campos",
                         "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                // Llamar al controlador para iniciar sesión
                 Usuario usuario = controlador.iniciarSesion(id, password);
 
                 if (usuario != null) {
-                    // Validar que el tipo de usuario coincida
                     if (validarTipoUsuario(usuario, tipoUsuario)) {
                         // Abrir ventana correspondiente
                         abrirVentanaPrincipal(usuario);
