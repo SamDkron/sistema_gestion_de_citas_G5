@@ -1,3 +1,9 @@
+/**
+ * @author Samuel David Dau Fernández
+ * @author Santiago Duica Plata
+ * @author Gustavo Daniel Olivos Rodríguez
+ */
+
 package aplicación;
 
 import controlador.Controlador;
