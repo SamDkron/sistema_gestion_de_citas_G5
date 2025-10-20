@@ -414,7 +414,7 @@ public class Service {
 
         List<Medico> especialistas = medicos.stream()
                 .filter(doc -> doc.getEspecialidad().equalsIgnoreCase(especialidad))
-                .toList();
+                .collect(Collectors.toList());
 
         if(especialistas.isEmpty()){
             return "No hay especialistas disponibles en la especialidad " + especialidad;
@@ -426,7 +426,8 @@ public class Service {
         sb.append(String.format("Motivo: %s\n\n", motivo));
         sb.append("Especialistas: " + especialistas + "\n");
         for(Medico m : especialistas){
-            sb.append(String.format("Dr(a). %s / Consultorio: %s\n  / Especialidad: %s\n" + m.nombreCompleto() + m.getConsultorioAsignado() + m.getEspecialidad()));
+            sb.append(String.format("Dr(a). %s / Consultorio: %s\n  / Especialidad: %s\n",
+                    m.nombreCompleto(), m.getConsultorioAsignado(), m.getEspecialidad()));
         }
 
         boolean creada = false;
