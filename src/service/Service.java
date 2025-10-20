@@ -312,19 +312,20 @@ public class Service {
     public String consultarHistoriaClinicaPaciente(String idPaciente) {
         Paciente paciente = searchPacienteById(idPaciente);
         if(paciente == null){
-            throw new IllegalArgumentException("La paciente no se encuentra.");
+            return "Paciente no encontrado";
         }
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Paciente:\n");
-        sb.append("Historia clínica del paciente");
-        sb.append(String.format("Nombre: %s\n", paciente.nombreCompleto()));
-        sb.append(String.format("Historia Clínica: %s\n", paciente.getHistoriaClinica()));
-        sb.append(String.format("Grupo Sanguíneo: %s\n", paciente.getTipoSangre()));
-        sb.append(String.format("Fecha De Nacimiento: %s\n", paciente.getFechaNacimiento()));
-        sb.append(String.format("Sexo: %s\n", paciente.getSexo()));
-        sb.append(String.format("Número de Telefono: %s\n", paciente.getTelefono()));
+        sb.append("=== HISTORIA CLÍNICA DEL PACIENTE ===\n\n");
+        sb.append("ID del paciente: ").append(paciente.getId()).append("\n");
+        sb.append("Nombre: ").append(paciente.nombreCompleto()).append("\n");
+        sb.append("Historia Clínica: ").append(paciente.getHistoriaClinica()).append("\n");
+        sb.append("Grupo Sanguíneo: ").append(paciente.getTipoSangre()).append("\n");
+        sb.append("Fecha de Nacimiento: ").append(paciente.getFechaNacimiento()).append("\n");
+        sb.append("Sexo: ").append(paciente.getSexo()).append("\n");
+        sb.append("Número de Teléfono: ").append(paciente.getTelefono()).append("\n");
+        sb.append("\n");
 
         List<Cita> pacienteCitas = citas.stream()
                 .filter(c -> c.getPaciente().getId().equals(paciente.getId()))
@@ -332,13 +333,14 @@ public class Service {
                 .sorted(Comparator.comparing(Cita::getFecha).reversed())
                 .collect(Collectors.toList());
 
-        sb.append("Historial de citas: \n");
+        sb.append("=== HISTORIAL DE CITAS ===\n\n");
 
         if(pacienteCitas.isEmpty()){
             sb.append("No hay citas completadas.\n");
         } else {
             for (Cita c : pacienteCitas) {
                 sb.append(c.toString()).append("\n");
+                sb.append("-".repeat(70)).append("\n\n");
             }
         }
         return sb.toString();

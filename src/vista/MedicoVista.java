@@ -93,10 +93,10 @@ public class MedicoVista extends JFrame {
         panel.add(crearBotonOpcion("Ver Mi Agenda", "📅", e -> verAgenda()), gbc);
 
         gbc.gridx = 1;
-        panel.add(crearBotonOpcion("Atender Cita", "💪", e -> atenderCita()), gbc);
+        panel.add(crearBotonOpcion("Atender Cita", "😷", e -> atenderCita()), gbc);
 
         gbc.gridx = 2;
-        panel.add(crearBotonOpcion("Ver Paciente", "👤", e -> verPaciente()), gbc);
+        panel.add(crearBotonOpcion("Historia Clínica", "📋", e -> verHistoriaClinicaPaciente()), gbc);
 
         // Segunda fila
         gbc.gridx = 0;
@@ -183,17 +183,24 @@ public class MedicoVista extends JFrame {
         }
     }
 
-    private void verPaciente() {
+    private void verHistoriaClinicaPaciente() {
         String idPaciente = JOptionPane.showInputDialog(this, "Ingrese el ID del paciente:");
         if (idPaciente != null && !idPaciente.trim().isEmpty()) {
-            Paciente paciente = controlador.verPaciente(idPaciente);
+            String historia = controlador.consultarHistoriaClinica(idPaciente);
 
-            if (paciente != null) {
-                String info = "INFORMACIÓN DEL PACIENTE\n\n" + paciente.toString();
-                JOptionPane.showMessageDialog(this, info, "Datos del Paciente",
-                        JOptionPane.INFORMATION_MESSAGE);
+            if (historia != null && !historia.contains("no encontrado")) {
+                JTextArea textArea = new JTextArea(historia);
+                textArea.setEditable(false);
+                textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.setPreferredSize(new Dimension(600, 400));
+
+                JOptionPane.showMessageDialog(this, scrollPane,
+                        "Historia Clínica del Paciente", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Paciente no encontrado",
+                JOptionPane.showMessageDialog(this,
+                        "Paciente no encontrado",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -228,19 +235,6 @@ public class MedicoVista extends JFrame {
                         "Error al cancelar la cita. Verifica el ID.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-
-    private void verConsultorio() {
-        Consultorio consultorio = controlador.verConsultorioAsignado(medico.getId());
-
-        if (consultorio != null) {
-            String info = "CONSULTORIO ASIGNADO\n\n" + consultorio.toString();
-            JOptionPane.showMessageDialog(this, info, "Mi Consultorio",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "No tienes consultorio asignado actualmente",
-                    "Información", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
