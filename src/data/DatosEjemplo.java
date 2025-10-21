@@ -44,7 +44,7 @@ public class DatosEjemplo {
         medicos.add(new Medico("M001", "Carlos", "Ramírez", "555-0101", "cramirez@hospital.com", "doc121", "Medicina General"));
         medicos.add(new Medico("M002", "Ana", "Martínez", "555-0102", "amartinez@hospital.com", "doc122", "Cardiología"));
         medicos.add(new Medico("M003", "Luis", "González", "555-0103", "lgonzalez@hospital.com", "doc123", "Pediatría"));
-        medicos.add(new Medico("M004", "José", "Mosquera", "555-0155", "@jmosquera@hospital.com", "doc124", "Neurologo"));
+        medicos.add(new Medico("M004", "José", "Mosquera", "555-0155", "@jmosquera@hospital.com", "doc124", "Neurologia"));
         medicos.add(new Medico("1234", "Samuel", "Baus", "12345678", "sbaus@unimag", "1234", "Ginecólogo"));
         return medicos;
     }

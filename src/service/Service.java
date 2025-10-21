@@ -451,8 +451,7 @@ public class Service {
 
                 if(consultorioAsignado != null){
                     String idNuevaCita = generadorIdCita();
-                    String motivoRemision = "\nRemitido a: " + especialidad + " por " + motivo;
-                    Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivoRemision, propuesta);
+                    Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivo, propuesta);
                     citas.add(nuevaCita);
                     medicoAsignado.agregarCita(nuevaCita);
 
