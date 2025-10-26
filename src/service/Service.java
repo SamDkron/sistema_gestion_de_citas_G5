@@ -90,7 +90,6 @@ public class Service {
     }
 
     /**
-     *
      * @param numero numero del consultorio
      * @return Consultorio si se encuentra el id, null si no se encuentra
      */
@@ -454,11 +453,10 @@ public class Service {
                     Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivo, propuesta);
                     citas.add(nuevaCita);
                     medicoAsignado.agregarCita(nuevaCita);
-
-                    sb.append("\n ======= Cita creada para remision de paciente =======:  \n");
-                    sb.append(nuevaCita).append("\n"); // automaticamente se llama al metodo toString
+                    sb.append("\n ======= Cita creada para remision de paciente =======  \n");
+                    sb.append(nuevaCita).append("\n");// automaticamente se llama al metodo toString
                     creada = true;
-                    cita.cancelarCita();
+                    cita.completar();
                     break;
                     //si logró agendar una cita, rompe el ciclo enseguida
                 }
@@ -475,6 +473,22 @@ public class Service {
 
     //Metodos de recepcionista//
 
+    /**
+     * Registra un nuevo médico en el sistema.
+     * <p>
+     *     Crea una nueva instancia de la clase Medico con los datos proporcionados
+     *     y la añade a la lista de médicos registrados en el sistema.
+     * </p>
+     *
+     * @param id el identificador único del médico
+     * @param nombre el nombre del médico
+     * @param apellido el apellido del médico
+     * @param telefono el número de teléfono de contacto del médico
+     * @param email la dirección de correo electrónico del médico
+     * @param password la contraseña asignada al médico para acceder al sistema
+     * @param especialidad la especialidad médica del profesional
+     * @return el objeto Medico registrado con todos sus datos
+     */
     public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
         Medico nuevoMedico = new Medico(id, nombre, apellido, telefono, email, password, especialidad);
         medicos.add(nuevoMedico);
@@ -654,18 +668,34 @@ public class Service {
      * @return
      */
 
+    /**
+     * Obtiene una lista con todos los pacientes registrados en el sistema.
+     * @return una lista de objetos Paciente registrados en el sistema
+     */
     public List<Paciente> enlistarPacientes(){
         return new ArrayList<>(pacientes);
     }
 
+    /**
+     * Obtiene una lista con todos los médicos registrados en el sistema.
+     * @return una lista de objetos Medico registrados en el sistema
+     */
     public List<Medico> enlistarMedicos() {
         return new ArrayList<>(medicos);
     }
 
+    /**
+     * Obtiene una lista con todos los consultorios disponibles en el sistema.
+     * @return una lista de objetos Consultorio registrados en el sistema
+     */
     public List<Consultorio> enlistarConsultorios() {
         return new ArrayList<>(consultorios);
     }
 
+    /**
+     * Obtiene una lista con todas las citas médicas registradas en el sistema.
+     * @return una lista de objetos Cita registrados en el sistema
+     */
     public List<Cita> enlistarCitas() {
         return new ArrayList<>(citas);
     }

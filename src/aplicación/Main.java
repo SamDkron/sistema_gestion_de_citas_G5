@@ -11,6 +11,10 @@ import service.Service;
 import vista.Vista;
 import javax.swing.SwingUtilities;
 
+/**
+ * Método principal del sistema.
+ * Inicia la aplicación creando las instancias del servicio, controlador y vista principal.
+ */
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

@@ -21,6 +21,12 @@ public class PacienteVista extends JFrame {
     private Paciente paciente;
     private Controlador controlador;
 
+    /**
+     * Constructor de la vista principal del paciente.
+     * Inicializa los componentes gráficos y muestra las opciones disponibles.
+     * @param paciente el paciente que inició sesión
+     * @param controlador instancia del controlador principal del sistema
+     */
     public PacienteVista(Paciente paciente, Controlador controlador) {
         super("Panel del Paciente - " + paciente.nombreCompleto());
         this.paciente = paciente;
@@ -41,6 +47,11 @@ public class PacienteVista extends JFrame {
         setContentPane(panelPrincipal);
     }
 
+    /**
+     * Crea el panel superior con la información del paciente.
+     * Muestra el nombre, historia clínica y tipo de sangre.
+     * @return el panel con la información del paciente
+     */
     private JPanel crearPanelInformacion() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(60, 179, 113));
@@ -81,6 +92,10 @@ public class PacienteVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el panel central con los botones de opciones disponibles para el paciente.
+     * @return el panel con las opciones del paciente
+     */
     private JPanel crearPanelOpciones() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(152, 251, 152));
@@ -91,7 +106,6 @@ public class PacienteVista extends JFrame {
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        // Primera fila
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(crearBotonOpcion("Reservar Cita", "📅", e -> reservarCita()), gbc);
@@ -115,6 +129,13 @@ public class PacienteVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea un botón personalizado con texto, ícono y acción asociada.
+     * @param texto el texto que se mostrará en el botón
+     * @param icono el ícono (en forma de texto) que acompaña al botón
+     * @param action la acción que se ejecutará al presionar el botón
+     * @return el botón configurado
+     */
     private JButton crearBotonOpcion(String texto, String icono, java.awt.event.ActionListener action) {
         JButton boton = new JButton("<html><center>" + icono + "<br>" + texto + "</center></html>");
         boton.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -141,6 +162,11 @@ public class PacienteVista extends JFrame {
         return boton;
     }
 
+    /**
+     * Permite al paciente reservar una nueva cita médica.
+     * Solicita los datos necesarios y los envía al controlador para su registro.
+     * Muestra mensajes de confirmación o error según el resultado.
+     */
     private void reservarCita() {
         JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
 
@@ -191,6 +217,11 @@ public class PacienteVista extends JFrame {
         }
     }
 
+    /**
+     * Permite al paciente cancelar una cita previamente agendada.
+     * Solicita el ID de la cita y envía la solicitud al controlador.
+     * Muestra un mensaje indicando si la cancelación fue exitosa o no.
+     */
     private void cancelarCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
         if (idCita != null && !idCita.trim().isEmpty()) {
@@ -208,6 +239,10 @@ public class PacienteVista extends JFrame {
         }
     }
 
+    /**
+     * Permite al paciente reprogramar una cita existente.
+     * Solicita el ID de la cita y una nueva fecha, luego actualiza la información mediante el controlador.
+     */
     private void reprogramarCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
         if (idCita != null && !idCita.trim().isEmpty()) {
@@ -239,6 +274,10 @@ public class PacienteVista extends JFrame {
         }
     }
 
+    /**
+     * Muestra todas las citas agendadas por el paciente.
+     * Recupera la información desde el controlador y la presenta en una ventana de texto.
+     */
     private void verMisCitas() {
         StringBuilder citas = new StringBuilder("MIS CITAS AGENDADAS\n\n");
 
@@ -266,6 +305,10 @@ public class PacienteVista extends JFrame {
         JOptionPane.showMessageDialog(this, scrollPane, "Mis Citas", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Muestra la historia clínica completa del paciente.
+     * Consulta los datos al controlador y los presenta en un área de texto.
+     */
     private void verHistoriaClinica() {
         String historia = controlador.consultarHistoriaClinica(paciente.getId());
 
@@ -280,6 +323,10 @@ public class PacienteVista extends JFrame {
                 "Mi Historia Clínica", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Muestra la lista de médicos disponibles en el sistema.
+     * Recupera la información desde el controlador y la muestra en una ventana de texto.
+     */
     private void verMedicos() {
         StringBuilder medicos = new StringBuilder("MÉDICOS DISPONIBLES\n\n");
 
@@ -304,6 +351,10 @@ public class PacienteVista extends JFrame {
                 "Médicos Disponibles", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Cierra la sesión actual del paciente.
+     * Pide confirmación al usuario y, si acepta, regresa a la vista principal del sistema.
+     */
     private void cerrarSesion() {
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Está seguro que desea cerrar sesión?",

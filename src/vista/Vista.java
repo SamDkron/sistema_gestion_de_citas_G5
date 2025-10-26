@@ -22,6 +22,11 @@ public class Vista extends JFrame {
     private CardLayout cardLayout;
     private Controlador controlador;
 
+    /**
+     * Constructor principal de la clase Vista.
+     * Inicializa la interfaz principal y configura los paneles de registro y login.
+     * @param controlador instancia del controlador que maneja la lógica del sistema
+     */
     public Vista(Controlador controlador) {
         super("SISTEMA DE GESTIÓN DE CITAS");
         this.controlador = controlador;
@@ -46,6 +51,10 @@ public class Vista extends JFrame {
         setContentPane(panelPrincipal);
     }
 
+    /**
+     * Crea el panel de bienvenida inicial con las opciones de registro e inicio de sesión.
+     * @return panel con el mensaje de bienvenida y los botones principales
+     */
     private JPanel crearPanelBienvenida() {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -80,6 +89,12 @@ public class Vista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el panel para seleccionar el tipo de usuario (médico, paciente o recepcionista),
+     * tanto para el registro como para el inicio de sesión.
+     * @param accion tipo de acción ("REGISTRO" o "LOGIN")
+     * @return panel con los botones de selección de tipo de usuario
+     */
     private JPanel crearPanelSeleccionTipo(String accion) {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -125,6 +140,11 @@ public class Vista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el formulario de registro para los médicos.
+     * Permite ingresar sus datos personales y especialidad.
+     * @return panel con los campos de registro para médicos
+     */
     private JPanel crearPanelRegistroMedico() {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -210,6 +230,11 @@ public class Vista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el formulario de registro para los pacientes.
+     * Incluye campos de información personal, tipo de sangre y sexo.
+     * @return panel con los campos de registro para pacientes
+     */
     private JPanel crearPanelRegistroPaciente() {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -304,6 +329,11 @@ public class Vista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el formulario de registro para los recepcionistas.
+     * Incluye la información básica y el turno de trabajo.
+     * @return panel con los campos de registro para recepcionistas
+     */
     private JPanel crearPanelRegistroRecepcionista() {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -388,6 +418,11 @@ public class Vista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el panel de inicio de sesión para el tipo de usuario especificado.
+     * @param tipoUsuario tipo de usuario ("MEDICO", "PACIENTE" o "RECEPCIONISTA")
+     * @return panel de login con los campos de usuario y contraseña
+     */
     private JPanel crearPanelLogin(String tipoUsuario) {
         ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/recursos/fondo.jpg"));
         JPanel panel = new FondoPanel(fondoIcon.getImage());
@@ -499,7 +534,10 @@ public class Vista extends JFrame {
     }
 
     /**
-     * Valida que el tipo de usuario coincida con el esperado
+     * Verifica si el tipo de usuario que inicia sesión coincide con el tipo esperado.
+     * @param usuario instancia del usuario que intenta ingresar
+     * @param tipoEsperado tipo de usuario esperado
+     * @return true si coincide el tipo, false en caso contrario
      */
     private boolean validarTipoUsuario(Usuario usuario, String tipoEsperado) {
         if (tipoEsperado.equals("MEDICO") && usuario instanceof Medico) return true;
@@ -509,7 +547,8 @@ public class Vista extends JFrame {
     }
 
     /**
-     * Abre la ventana principal correspondiente según el tipo de usuario
+     * Abre la ventana principal correspondiente al tipo de usuario autenticado.
+     * @param usuario usuario que ha iniciado sesión correctamente
      */
     private void abrirVentanaPrincipal(Usuario usuario) {
         if (usuario instanceof Medico) {
@@ -521,18 +560,32 @@ public class Vista extends JFrame {
         }
     }
 
+    /**
+     * Crea y configura un campo de texto estándar para los formularios.
+     * @return campo de texto configurado
+     */
     private JTextField crearCampoTexto() {
         JTextField campo = new JTextField(15);
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         return campo;
     }
 
+    /**
+     * Crea y configura un campo de contraseña estándar para los formularios.
+     * @return campo de contraseña configurado
+     */
     private JPasswordField crearCampoPassword() {
         JPasswordField campo = new JPasswordField(15);
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         return campo;
     }
 
+    /**
+     * Agrega una etiqueta y un campo de entrada al panel de formulario.
+     * @param panel panel donde se agregarán los componentes
+     * @param etiqueta texto de la etiqueta del campo
+     * @param campo componente de entrada (JTextField, JComboBox, etc.)
+     */
     private void agregarCampo(JPanel panel, String etiqueta, JComponent campo) {
         JLabel lbl = new JLabel(etiqueta);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -541,6 +594,12 @@ public class Vista extends JFrame {
         panel.add(campo);
     }
 
+    /**
+     * Verifica que todos los campos indicados no estén vacíos.
+     * Muestra un mensaje de error si alguno está incompleto.
+     * @param campos lista de campos a validar
+     * @return true si todos los campos están completos, false en caso contrario
+     */
     private boolean validarCampos(JComponent... campos) {
         for (JComponent campo : campos) {
             if (campo instanceof JTextField) {
@@ -562,6 +621,10 @@ public class Vista extends JFrame {
         return true;
     }
 
+    /**
+     * Limpia el contenido de los campos de texto y contraseña indicados.
+     * @param campos lista de campos a limpiar
+     */
     private void limpiarCampos(JComponent... campos) {
         for (JComponent campo : campos) {
             if (campo instanceof JTextField) {
@@ -572,6 +635,12 @@ public class Vista extends JFrame {
         }
     }
 
+    /**
+     * Crea un botón personalizado con estilo visual redondeado y color de fondo.
+     * @param texto texto que se mostrará en el botón
+     * @param colorFondo color de fondo del botón
+     * @return botón personalizado
+     */
     private JButton crearBoton(String texto, Color colorFondo) {
         JButton boton = new JButton(texto) {
             @Override
@@ -610,6 +679,9 @@ public class Vista extends JFrame {
         return boton;
     }
 
+    /**
+     * Panel con imagen de fondo semitransparente utilizado en la interfaz.
+     */
     static class FondoPanel extends JPanel {
         private final Image imagen;
         public FondoPanel(Image imagen) {

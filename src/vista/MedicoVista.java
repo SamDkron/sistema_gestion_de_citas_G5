@@ -19,6 +19,12 @@ public class MedicoVista extends JFrame {
     private Medico medico;
     private Controlador controlador;
 
+    /**
+     * Constructor de la vista del médico.
+     * Inicializa la ventana principal con la información del médico y las opciones disponibles.
+     * @param medico instancia del médico autenticado
+     * @param controlador controlador que gestiona la lógica del sistema
+     */
     public MedicoVista(Medico medico, Controlador controlador) {
         super("Panel del Médico - " + medico.nombreCompleto());
         this.medico = medico;
@@ -39,6 +45,12 @@ public class MedicoVista extends JFrame {
         setContentPane(panelPrincipal);
     }
 
+    /**
+     * Crea el panel superior que muestra la información del médico,
+     * incluyendo su nombre, especialidad y consultorio asignado.
+     * También contiene el botón para cerrar sesión.
+     * @return panel con la información del médico
+     */
     private JPanel crearPanelInformacion() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(100, 149, 237));
@@ -81,6 +93,11 @@ public class MedicoVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el panel principal de opciones que contiene los botones
+     * para acceder a las distintas funcionalidades del médico.
+     * @return panel con los botones de opciones
+     */
     private JPanel crearPanelOpciones() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(135, 206, 250));
@@ -114,6 +131,14 @@ public class MedicoVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea un botón personalizado para el menú de opciones del médico,
+     * con texto, ícono y acción asociada.
+     * @param texto texto del botón
+     * @param icono símbolo o ícono representativo del botón
+     * @param action acción que se ejecutará al presionar el botón
+     * @return botón configurado con el diseño y acción especificados
+     */
     private JButton crearBotonOpcion(String texto, String icono, java.awt.event.ActionListener action) {
         JButton boton = new JButton("<html><center>" + icono + "<br>" + texto + "</center></html>");
         boton.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -140,6 +165,10 @@ public class MedicoVista extends JFrame {
         return boton;
     }
 
+    /**
+     * Muestra la agenda actual del médico, incluyendo las citas programadas.
+     * Si no hay citas agendadas, se informa al usuario.
+     */
     private void verAgenda() {
         StringBuilder agenda = new StringBuilder("AGENDA DEL DR(A). " + medico.nombreCompleto() + "\n\n");
 
@@ -161,6 +190,11 @@ public class MedicoVista extends JFrame {
         JOptionPane.showMessageDialog(this, scrollPane, "Mi Agenda", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Permite al médico registrar la atención de una cita ingresando su ID,
+     * diagnóstico, tratamiento y observaciones correspondientes.
+     * Valida los datos e informa si la operación fue exitosa o no.
+     */
     private void atenderCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
         if (idCita != null && !idCita.trim().isEmpty()) {
@@ -185,6 +219,10 @@ public class MedicoVista extends JFrame {
         }
     }
 
+    /**
+     * Consulta y muestra la historia clínica de un paciente ingresando su ID.
+     * Si el paciente no existe, se muestra un mensaje de error.
+     */
     private void verHistoriaClinicaPaciente() {
         String idPaciente = JOptionPane.showInputDialog(this, "Ingrese el ID del paciente:");
         if (idPaciente != null && !idPaciente.trim().isEmpty()) {
@@ -208,6 +246,11 @@ public class MedicoVista extends JFrame {
         }
     }
 
+    /**
+     * Permite al médico remitir a un paciente a otra especialidad.
+     * Solicita el ID de la cita, la especialidad destino y el motivo de la remisión.
+     * Muestra el resultado de la operación.
+     */
     private void remitirPaciente() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
         if (idCita != null && !idCita.trim().isEmpty()) {
@@ -223,6 +266,10 @@ public class MedicoVista extends JFrame {
         }
     }
 
+    /**
+     * Cancela una cita médica ingresando su ID.
+     * Verifica si la cancelación fue exitosa y muestra un mensaje informativo.
+     */
     private void cancelarCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
         if (idCita != null && !idCita.trim().isEmpty()) {
@@ -240,6 +287,10 @@ public class MedicoVista extends JFrame {
         }
     }
 
+    /**
+     * Muestra el historial de citas atendidas por el médico.
+     * Si no hay citas completadas, se informa al usuario.
+     */
     private void verHistorial() {
         StringBuilder historial = new StringBuilder("HISTORIAL DE CITAS ATENDIDAS\n\n");
 
@@ -265,6 +316,10 @@ public class MedicoVista extends JFrame {
         JOptionPane.showMessageDialog(this, scrollPane, "Historial", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Cierra la sesión actual del médico previa confirmación.
+     * Al confirmar, cierra la ventana y regresa a la vista principal de login.
+     */
     private void cerrarSesion() {
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Está seguro que desea cerrar sesión?",

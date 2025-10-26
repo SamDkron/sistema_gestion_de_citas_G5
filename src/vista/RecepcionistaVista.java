@@ -21,6 +21,12 @@ public class RecepcionistaVista extends JFrame {
     private Recepcionista recepcionista;
     private Controlador controlador;
 
+    /**
+     * Constructor de la vista principal del recepcionista.
+     * Inicializa los componentes gráficos y muestra las opciones disponibles.
+     * @param recepcionista el recepcionista que inició sesión
+     * @param controlador instancia del controlador principal del sistema
+     */
     public RecepcionistaVista(Recepcionista recepcionista, Controlador controlador) {
         super("Panel del Recepcionista - " + recepcionista.nombreCompleto());
         this.recepcionista = recepcionista;
@@ -41,6 +47,11 @@ public class RecepcionistaVista extends JFrame {
         setContentPane(panelPrincipal);
     }
 
+    /**
+     * Crea el panel superior con la información del recepcionista.
+     * Muestra el nombre y turno actual del usuario.
+     * @return el panel con la información del recepcionista
+     */
     private JPanel crearPanelInformacion() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(210, 105, 30));
@@ -76,6 +87,11 @@ public class RecepcionistaVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea el panel central con los botones de opciones disponibles
+     * para el recepcionista en el sistema.
+     * @return el panel con las opciones del recepcionista
+     */
     private JPanel crearPanelOpciones() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(255, 218, 185));
@@ -119,6 +135,13 @@ public class RecepcionistaVista extends JFrame {
         return panel;
     }
 
+    /**
+     * Crea un botón personalizado con texto, ícono y acción asociada.
+     * @param texto el texto que se mostrará en el botón
+     * @param icono el ícono (en formato texto) que acompaña al botón
+     * @param action la acción que se ejecutará al presionar el botón
+     * @return el botón configurado
+     */
     private JButton crearBotonOpcion(String texto, String icono, java.awt.event.ActionListener action) {
         JButton boton = new JButton("<html><center>" + icono + "<br>" + texto + "</center></html>");
         boton.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -145,6 +168,11 @@ public class RecepcionistaVista extends JFrame {
         return boton;
     }
 
+    /**
+     * Permite registrar un nuevo médico en el sistema.
+     * Solicita los datos del médico y los envía al controlador para su registro.
+     * Muestra mensajes de confirmación o error según el resultado.
+     */
     private void registrarMedico() {
         JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
 
@@ -197,6 +225,11 @@ public class RecepcionistaVista extends JFrame {
         }
     }
 
+    /**
+     * Permite registrar un nuevo paciente en el sistema.
+     * Solicita los datos personales y clínicos del paciente y genera su historia clínica.
+     * Muestra mensajes de confirmación o error según el resultado.
+     */
     private void registrarPaciente() {
         JPanel panel = new JPanel(new GridLayout(9, 2, 10, 10));
 
@@ -260,6 +293,11 @@ public class RecepcionistaVista extends JFrame {
         }
     }
 
+    /**
+     * Asigna un consultorio a un médico en una fecha determinada.
+     * Solicita los datos necesarios y los envía al controlador.
+     * Muestra un mensaje de éxito o error según el resultado.
+     */
     private void asignarConsultorio() {
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
 
@@ -305,6 +343,10 @@ public class RecepcionistaVista extends JFrame {
         }
     }
 
+    /**
+     * Permite consultar la información completa de un paciente por su ID.
+     * Muestra los datos recuperados del controlador en una ventana de texto.
+     */
     private void consultarPaciente() {
         String idPaciente = JOptionPane.showInputDialog(this, "Ingrese el ID del paciente:");
         if (idPaciente != null && !idPaciente.trim().isEmpty()) {
@@ -322,6 +364,10 @@ public class RecepcionistaVista extends JFrame {
         }
     }
 
+    /**
+     * Permite consultar la información de un médico por su ID.
+     * Muestra los datos obtenidos desde el controlador en una ventana de texto.
+     */
     private void consultarMedico() {
         String idMedico = JOptionPane.showInputDialog(this, "Ingrese el ID del médico:");
         if (idMedico != null && !idMedico.trim().isEmpty()) {
@@ -339,6 +385,10 @@ public class RecepcionistaVista extends JFrame {
         }
     }
 
+    /**
+     * Muestra todas las citas registradas en el sistema.
+     * Recupera la información desde el controlador y la presenta en una vista de texto.
+     */
     private void verTodasCitas() {
         StringBuilder citas = new StringBuilder("TODAS LAS CITAS DEL SISTEMA\n\n");
 
@@ -363,6 +413,10 @@ public class RecepcionistaVista extends JFrame {
                 "Todas las Citas", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Muestra la lista completa de médicos registrados en el sistema.
+     * Obtiene la información desde el controlador y la muestra en una ventana de texto.
+     */
     private void listarMedicos() {
         StringBuilder medicos = new StringBuilder("MÉDICOS REGISTRADOS EN EL SISTEMA\n\n");
 
@@ -387,6 +441,10 @@ public class RecepcionistaVista extends JFrame {
                 "Lista de Médicos", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Muestra la lista completa de pacientes registrados en el sistema.
+     * Obtiene los datos desde el controlador y los presenta en formato de texto.
+     */
     private void listarPacientes() {
         StringBuilder pacientes = new StringBuilder("PACIENTES REGISTRADOS EN EL SISTEMA\n\n");
 
@@ -411,6 +469,10 @@ public class RecepcionistaVista extends JFrame {
                 "Lista de Pacientes", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Muestra los consultorios disponibles y su información detallada.
+     * Recupera los datos desde el controlador y los presenta en una ventana de texto.
+     */
     private void listarConsultorios() {
         StringBuilder consultorios = new StringBuilder("CONSULTORIOS DEL SISTEMA\n\n");
 
@@ -433,6 +495,10 @@ public class RecepcionistaVista extends JFrame {
                 "Lista de Consultorios", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Cierra la sesión actual del recepcionista.
+     * Pide confirmación y, en caso afirmativo, regresa a la vista principal del sistema.
+     */
     private void cerrarSesion() {
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Está seguro que desea cerrar sesión?",
