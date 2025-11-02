@@ -1,0 +1,334 @@
+/**
+ * @author Samuel David Dau Fernández
+ * @author Santiago Duica Plata
+ * @author Gustavo Daniel Olivos Rodríguez
+ */
+
+package vista;
+
+import controlador.Controlador;
+import modelo.*;
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Vista principal para el médico
+ * Muestra las funcionalidades disponibles para el médico
+ */
+public class MedicoVista extends JFrame {
+    private Medico medico;
+    private Controlador controlador;
+
+    /**
+     * Constructor de la vista del médico.
+     * Inicializa la ventana principal con la información del médico y las opciones disponibles.
+     * @param medico instancia del médico autenticado
+     * @param controlador controlador que gestiona la lógica del sistema
+     */
+    public MedicoVista(Medico medico, Controlador controlador) {
+        super("Panel del Médico - " + medico.nombreCompleto());
+        this.medico = medico;
+        this.controlador = controlador;
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.setBackground(new Color(135, 206, 250));
+
+        JPanel panelInfo = crearPanelInformacion();
+        panelPrincipal.add(panelInfo, BorderLayout.NORTH);
+
+        JPanel panelOpciones = crearPanelOpciones();
+        panelPrincipal.add(panelOpciones, BorderLayout.CENTER);
+
+        setContentPane(panelPrincipal);
+    }
+
+    /**
+     * Crea el panel superior que muestra la información del médico,
+     * incluyendo su nombre, especialidad y consultorio asignado.
+     * También contiene el botón para cerrar sesión.
+     * @return panel con la información del médico
+     */
+    private JPanel crearPanelInformacion() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(100, 149, 237));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        JLabel lblBienvenida = new JLabel("Bienvenido Dr(a). " + medico.nombreCompleto());
+        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        lblBienvenida.setForeground(Color.WHITE);
+
+        JLabel lblEspecialidad = new JLabel("Especialidad: " + medico.getEspecialidad());
+        lblEspecialidad.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblEspecialidad.setForeground(Color.WHITE);
+
+        String consultorio = medico.getConsultorioAsignado().isEmpty() ?
+                "Sin asignar" : medico.getConsultorioAsignado();
+        JLabel lblConsultorio = new JLabel("Consultorio: " + consultorio);
+        lblConsultorio.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblConsultorio.setForeground(Color.WHITE);
+
+        JPanel panelTextos = new JPanel();
+        panelTextos.setLayout(new BoxLayout(panelTextos, BoxLayout.Y_AXIS));
+        panelTextos.setOpaque(false);
+        panelTextos.add(lblBienvenida);
+        panelTextos.add(Box.createVerticalStrut(10));
+        panelTextos.add(lblEspecialidad);
+        panelTextos.add(lblConsultorio);
+
+        panel.add(panelTextos, BorderLayout.WEST);
+
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCerrarSesion.setBackground(new Color(220, 20, 60));
+        btnCerrarSesion.setForeground(Color.WHITE);
+        btnCerrarSesion.setFocusPainted(false);
+        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrarSesion.addActionListener(e -> cerrarSesion());
+
+        panel.add(btnCerrarSesion, BorderLayout.EAST);
+
+        return panel;
+    }
+
+    /**
+     * Crea el panel principal de opciones que contiene los botones
+     * para acceder a las distintas funcionalidades del médico.
+     * @return panel con los botones de opciones
+     */
+    private JPanel crearPanelOpciones() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(135, 206, 250));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(crearBotonOpcion("Ver Mi Agenda", "📅", e -> verAgenda()), gbc);
+
+        gbc.gridx = 1;
+        panel.add(crearBotonOpcion("Atender Cita", "😷", e -> atenderCita()), gbc);
+
+        gbc.gridx = 2;
+        panel.add(crearBotonOpcion("Historia Clínica", "📋", e -> verHistoriaClinicaPaciente()), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(crearBotonOpcion("Remitir Paciente", "📋", e -> remitirPaciente()), gbc);
+
+        gbc.gridx = 1;
+        panel.add(crearBotonOpcion("Cancelar Cita", "X", e -> cancelarCita()), gbc);
+
+        gbc.gridx = 2;
+        panel.add(crearBotonOpcion("Historial de Citas", "📊", e -> verHistorial()), gbc);
+
+        return panel;
+    }
+
+    /**
+     * Crea un botón personalizado para el menú de opciones del médico,
+     * con texto, ícono y acción asociada.
+     * @param texto texto del botón
+     * @param icono símbolo o ícono representativo del botón
+     * @param action acción que se ejecutará al presionar el botón
+     * @return botón configurado con el diseño y acción especificados
+     */
+    private JButton crearBotonOpcion(String texto, String icono, java.awt.event.ActionListener action) {
+        JButton boton = new JButton("<html><center>" + icono + "<br>" + texto + "</center></html>");
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        boton.setBackground(Color.WHITE);
+        boton.setForeground(new Color(100, 149, 237));
+        boton.setFocusPainted(false);
+        boton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(100, 149, 237), 3),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        boton.setPreferredSize(new Dimension(250, 150));
+        boton.addActionListener(action);
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(230, 240, 255));
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                boton.setBackground(Color.WHITE);
+            }
+        });
+
+        return boton;
+    }
+
+    /**
+     * Muestra la agenda actual del médico, incluyendo las citas programadas.
+     * Si no hay citas agendadas, se informa al usuario.
+     */
+    private void verAgenda() {
+        StringBuilder agenda = new StringBuilder("AGENDA DEL DR(A). " + medico.nombreCompleto() + "\n\n");
+
+        if (medico.getAgenda().isEmpty()) {
+            agenda.append("No tienes citas agendadas.");
+        } else {
+            for (Cita cita : medico.getAgenda()) {
+                agenda.append(cita.toString()).append("\n").append("-".repeat(50)).append("\n\n");
+            }
+        }
+
+        JTextArea textArea = new JTextArea(agenda.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(600, 400));
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Mi Agenda", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Permite al médico registrar la atención de una cita ingresando su ID,
+     * diagnóstico, tratamiento y observaciones correspondientes.
+     * Valida los datos e informa si la operación fue exitosa o no.
+     */
+    private void atenderCita() {
+        String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
+        if (idCita != null && !idCita.trim().isEmpty()) {
+            String diagnostico = JOptionPane.showInputDialog(this, "Diagnóstico:");
+            if (diagnostico != null && !diagnostico.trim().isEmpty()) {
+                String tratamiento = JOptionPane.showInputDialog(this, "Tratamiento:");
+                if (tratamiento != null && !tratamiento.trim().isEmpty()) {
+                    String observaciones = JOptionPane.showInputDialog(this, "Observaciones:");
+
+                    boolean exito = controlador.atenderCita(idCita, diagnostico, tratamiento,
+                            observaciones != null ? observaciones : "");
+
+                    if (exito) {
+                        JOptionPane.showMessageDialog(this, "Cita atendida exitosamente",
+                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al atender la cita",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Consulta y muestra la historia clínica de un paciente ingresando su ID.
+     * Si el paciente no existe, se muestra un mensaje de error.
+     */
+    private void verHistoriaClinicaPaciente() {
+        String idPaciente = JOptionPane.showInputDialog(this, "Ingrese el ID del paciente:");
+        if (idPaciente != null && !idPaciente.trim().isEmpty()) {
+            String historia = controlador.consultarHistoriaClinica(idPaciente);
+
+            if (historia != null && !historia.contains("no encontrado")) {
+                JTextArea textArea = new JTextArea(historia);
+                textArea.setEditable(false);
+                textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.setPreferredSize(new Dimension(600, 400));
+
+                JOptionPane.showMessageDialog(this, scrollPane,
+                        "Historia Clínica del Paciente", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Paciente no encontrado",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * Permite al médico remitir a un paciente a otra especialidad.
+     * Solicita el ID de la cita, la especialidad destino y el motivo de la remisión.
+     * Muestra el resultado de la operación.
+     */
+    private void remitirPaciente() {
+        String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
+        if (idCita != null && !idCita.trim().isEmpty()) {
+            String especialidad = JOptionPane.showInputDialog(this, "Especialidad a remitir:");
+            if (especialidad != null && !especialidad.trim().isEmpty()) {
+                String motivo = JOptionPane.showInputDialog(this, "Motivo de la remisión:");
+                if (motivo != null && !motivo.trim().isEmpty()) {
+                    String resultado = controlador.remitirPaciente(idCita, especialidad, motivo);
+                    JOptionPane.showMessageDialog(this, resultado, "Remisión",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }
+
+    /**
+     * Cancela una cita médica ingresando su ID.
+     * Verifica si la cancelación fue exitosa y muestra un mensaje informativo.
+     */
+    private void cancelarCita() {
+        String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
+        if (idCita != null && !idCita.trim().isEmpty()) {
+            boolean exito = controlador.cancelarCita(idCita, medico.getId());
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this,
+                        "Cita cancelada exitosamente",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cancelar la cita. Verifica el ID.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * Muestra el historial de citas atendidas por el médico.
+     * Si no hay citas completadas, se informa al usuario.
+     */
+    private void verHistorial() {
+        StringBuilder historial = new StringBuilder("HISTORIAL DE CITAS ATENDIDAS\n\n");
+
+        int citasAtendidas = 0;
+        for (Cita cita : medico.getAgenda()) {
+            if (cita.getEstadoCita() == citaState.COMPLETADA) {
+                historial.append(cita.toString()).append("\n").append("-".repeat(50)).append("\n\n");
+                citasAtendidas++;
+            }
+        }
+
+        if (citasAtendidas == 0) {
+            historial.append("No has atendido citas aún.");
+        }
+
+        JTextArea textArea = new JTextArea(historial.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(600, 400));
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Historial", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Cierra la sesión actual del médico previa confirmación.
+     * Al confirmar, cierra la ventana y regresa a la vista principal de login.
+     */
+    private void cerrarSesion() {
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro que desea cerrar sesión?",
+                "Confirmar",
+                JOptionPane.YES_NO_OPTION);
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            this.dispose();
+            new Vista(controlador).setVisible(true);
+        }
+    }
+}
