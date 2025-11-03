@@ -10,7 +10,6 @@ import data.DatosEjemplo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import modelo.*;
 
@@ -429,7 +428,6 @@ public class Service {
 
         StringBuilder sb = new StringBuilder();
         boolean creada = false;
-        Medico medicoAsignado = especialistas.get(0);
         Paciente paciente = cita.getPaciente();
         Consultorio consultorioAsignado = null;
         LocalDateTime propuesta = LocalDateTime.now().plusHours(1);
@@ -438,8 +436,10 @@ public class Service {
         LocalDateTime limiteHorario = propuesta.plusDays(30);
 
         while(!creada && !propuesta.isAfter(limiteHorario)){
-            if(validarHorarioMedico(medicoAsignado, propuesta)){
-                if(consultorioAsignado == null || !validarHorarioConsultorio(consultorioAsignado, propuesta)){
+            // Intenta con cada especialista disponible
+            for(Medico medicoAsignado : especialistas){
+                if(validarHorarioMedico(medicoAsignado, propuesta)){
+                    // Busca un consultorio disponible para este médico en este horario
                     for(Consultorio c: consultorios){
                         if(validarHorarioConsultorio(c, propuesta)){
                             consultorioAsignado = c;
