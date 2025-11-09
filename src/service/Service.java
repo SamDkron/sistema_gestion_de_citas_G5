@@ -10,7 +10,6 @@ import data.DatosEjemplo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import modelo.*;
 
@@ -28,6 +27,7 @@ public class Service {
     private List<Paciente> pacientes;
     private List<Consultorio> consultorios;
     private List<Recepcionista> recepcionistas;
+    private GestionarUsuario gestionarUsuario;
     private int contadorMedicos;
     private int contadorPacientes;
     private int contadorConsultorios;
@@ -42,6 +42,8 @@ public class Service {
         this.pacientes = new ArrayList<>();
         this.consultorios = new ArrayList<>();
         this.recepcionistas = new ArrayList<>();
+        this.gestionarUsuario = new GestionarUsuario();
+        gestionarUsuario.cargarDesdeArchivo();
         this.contadorMedicos = 4;
         this.contadorPacientes = 4;
         this.contadorConsultorios = 5;
@@ -413,7 +415,7 @@ public class Service {
      * @param motivo motivo de la remision del paciente
      * @return un String que contiene todos los datos de la remision del paciente siempre y cuando sea exitosa
      */
-    public String remitirPaciente(String idCita, String especialidad, String motivo){
+    public String remitirPaciente(String idCita, String especialidad, String motivo){    
         Cita cita = searchCitaById(idCita);
         if(cita == null){
             throw new IllegalArgumentException("La cita no se encuentra.");
@@ -429,7 +431,6 @@ public class Service {
 
         StringBuilder sb = new StringBuilder();
         boolean creada = false;
-        Medico medicoAsignado = especialistas.get(0);
         Paciente paciente = cita.getPaciente();
         Consultorio consultorioAsignado = null;
         LocalDateTime propuesta = LocalDateTime.now().plusHours(1);
@@ -438,8 +439,10 @@ public class Service {
         LocalDateTime limiteHorario = propuesta.plusDays(30);
 
         while(!creada && !propuesta.isAfter(limiteHorario)){
-            if(validarHorarioMedico(medicoAsignado, propuesta)){
-                if(consultorioAsignado == null || !validarHorarioConsultorio(consultorioAsignado, propuesta)){
+            // Intenta con cada especialista disponible
+            for(Medico medicoAsignado : especialistas){
+                if(validarHorarioMedico(medicoAsignado, propuesta)){
+                    // Busca un consultorio disponible para este médico en este horario
                     for(Consultorio c: consultorios){
                         if(validarHorarioConsultorio(c, propuesta)){
                             consultorioAsignado = c;
@@ -492,6 +495,8 @@ public class Service {
     public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
         Medico nuevoMedico = new Medico(id, nombre, apellido, telefono, email, password, especialidad);
         medicos.add(nuevoMedico);
+        gestionarUsuario.agregarUsuario(nuevoMedico);
+        gestionarUsuario.guardarEnArchivo();
         return nuevoMedico;
     }
 
@@ -518,6 +523,8 @@ public class Service {
         Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido, telefono, email, password, state);
 
         recepcionistas.add(nuevoRecepcionista);
+        gestionarUsuario.agregarUsuario(nuevoRecepcionista);
+        gestionarUsuario.guardarEnArchivo();
 
         System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
         return nuevoRecepcionista;
@@ -543,6 +550,8 @@ public class Service {
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, telefono, email, password,
                 historiaClinica, fechaNacimiento, tipoSangre, sexo);
         pacientes.add(nuevoPaciente);
+        gestionarUsuario.agregarUsuario(nuevoPaciente);
+        gestionarUsuario.guardarEnArchivo();
         return nuevoPaciente;
     }
 
