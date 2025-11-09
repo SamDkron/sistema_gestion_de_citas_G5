@@ -10,7 +10,7 @@ package modelo;
  * Clase base la cual representa las caracteristicas basicas de todos los usuarios del sistema
  */
 
-public abstract class Usuario {
+public class Usuario {
     private String id;
     private String nombre;
     private String apellido;
@@ -92,6 +92,14 @@ public abstract class Usuario {
         return nombre + " " + apellido;
     }
 
+    public String toCSV(){
+        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password;
+    }
+
+    public static Usuario fromCSV(String csv){ // lee una linea que viene en formato csv y este metodo lo divide y lo convierte en objeto
+        String[] line = csv.split(";");
+        return new Usuario(line[0], line[1], line[2], line[3], line[4], line[5]);
+    }
     /**
      * Formato para imprimir los datos del usuario
      * @return cadena de texto con la informacion del usuario
@@ -101,8 +109,3 @@ public abstract class Usuario {
         return String.format("ID: %s /// %s %s /// Tel: %s /// Email: %s", id, nombre, apellido, telefono, email);
     }
 }
-
-
-
-
-
