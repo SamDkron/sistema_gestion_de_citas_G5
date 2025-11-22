@@ -86,6 +86,21 @@ public class Medico extends Usuario {
         this.agenda.remove(cita);
     }
 
+    public static Medico fromCSV(String csv) {
+        String[] line = csv.split(";");
+        return new Medico(line[0], line[1],  line[2], line[3], line[4], line[5], line[6]);
+    }
+
+    @Override
+    public String toCSV(){
+        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + especialidad + ";" + consultorioAsignado;
+    }
+
+    @Override
+    public String getTipo() {
+        return "Medico";
+    }
+
     /**
      * Formato para imprimir la informacion basica del medico
      * @return String que contiene la informacion basica del medico

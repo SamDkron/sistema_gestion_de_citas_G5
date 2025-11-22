@@ -10,7 +10,6 @@ import data.DatosEjemplo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import modelo.*;
 
@@ -23,15 +22,12 @@ import modelo.*;
  */
 
 public class Service {
-    private List<Cita> citas;
-    private List<Medico> medicos;
-    private List<Paciente> pacientes;
-    private List<Consultorio> consultorios;
-    private List<Recepcionista> recepcionistas;
-    private GestionarUsuario gestionarUsuario;
-    private int contadorMedicos;
-    private int contadorPacientes;
-    private int contadorConsultorios;
+    private final List<Cita> citas;
+    private final List<Medico> medicos;
+    private final List<Paciente> pacientes;
+    private final List<Consultorio> consultorios;
+    private final List<Recepcionista> recepcionistas;
+    private final GestionarUsuario gestionarUsuario;
     private int contadorCitas;
 
     /**
@@ -45,9 +41,6 @@ public class Service {
         this.recepcionistas = new ArrayList<>();
         this.gestionarUsuario = new GestionarUsuario();
         gestionarUsuario.cargarDesdeArchivo();
-        this.contadorMedicos = 4;
-        this.contadorPacientes = 4;
-        this.contadorConsultorios = 5;
         this.contadorCitas = 1;
 
         this.recepcionistas.addAll(DatosEjemplo.inicializarRecepcionista());
@@ -74,21 +67,26 @@ public class Service {
      * @param id ID unica del usuario
      * @return Paciente / Medico si se encuentra el id, null en caso contrario
      */
-    public Paciente searchPacienteById(String id) {
-        for (Paciente p1 : pacientes) {
-            if (p1.getId().equals(id)) {
-                return p1;
-            }
-        }
-        return null;
-    }
 
-    public Medico searchMedicoById(String id) {
-        for (Medico m1 : medicos) {
-            if (m1.getId().equals(id)) {
-                return m1;
+    public Usuario searchUserById(String id){
+        for(Usuario paciente : gestionarUsuario.getPacientes()){
+            if(paciente.getId().equals(id)){
+                return paciente;
             }
         }
+
+        for(Usuario medico : gestionarUsuario.getMedicos()){
+            if(medico.getId().equals(id)){
+                return medico;
+            }
+        }
+        
+        for(Usuario Recepcionista : gestionarUsuario.getRecepcionistas()){
+            if(Recepcionista.getId().equals(id)){
+                return Recepcionista;
+            }
+        }
+
         return null;
     }
 
@@ -192,7 +190,7 @@ public class Service {
      * metodo encargado de evaluar las credenciales de los usuarios en los inicios de sesion
      * <p>
      *     comprueba si el id y la contraseña ingresada coinciden con algun
-     *     usuario que se encuentre guardado en alguna de las listas
+     *     usuario que se encuentre en el archivo
      * </p>
      * @param id ID unica del usuario
      * @param password contraseña del usuario
@@ -200,22 +198,39 @@ public class Service {
      */
 
     public Usuario iniciarSesion (String id, String password){
-        for (Paciente p1 : pacientes) {
-            if (p1.getId().equals(id) && p1.getPassword().equals(password)) {
-                return p1;
+        if(id == null  || id.trim().isEmpty()){
+            System.out.println("El ID del usuario no puede estar vacio");
+            return null;
+        }
+
+        if(password == null || password.trim().isEmpty()){
+            System.out.println("La contraseña no puede estar vacia");
+            return null;
+        }
+
+        for(Paciente paciente : gestionarUsuario.getPacientes()){
+            if(paciente.getId().equals(id) && paciente.getPassword().equals(password)){
+                return paciente;
             }
         }
-        for (Medico m1 : medicos) {
-            if (m1.getId().equals(id) && m1.getPassword().equals(password)) {
-                return m1;
+
+        for(Medico medico : gestionarUsuario.getMedicos()){
+            if(medico.getId().equals(id) && medico.getPassword().equals(password)){
+                return medico;
             }
         }
-        for (Recepcionista r1 : recepcionistas) {
-            if (r1.getId().equals(id) && r1.getPassword().equals(password)) {
-                return r1;
+
+        for(Recepcionista recepcionista : gestionarUsuario.getRecepcionistas()){
+            if(recepcionista.getId().equals(id) && recepcionista.getPassword().equals(password)){
+                return recepcionista;
             }
         }
         return null;
+    }
+
+    public String identificarTipoUsuario(Usuario usuario){
+        if(usuario == null) return "Desconocido";
+        return usuario.getTipo(); //Puede entrar cualquier objeto que herede de usuario y va directamente al metodo override en la subclase
     }
 
     /**
@@ -233,8 +248,8 @@ public class Service {
      */
 
     public Cita reservarCita(String idPaciente, String idMedico, String numeroConsultorio, String motivo, LocalDateTime fecha) {
-        Paciente paciente = searchPacienteById(idPaciente);
-        Medico medico = searchMedicoById(idMedico);
+        Paciente paciente = (Paciente) searchUserById(idPaciente);
+        Medico medico = (Medico) searchUserById(idMedico);
         Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
 
         if(fecha.isBefore(LocalDateTime.now())){
@@ -321,7 +336,7 @@ public class Service {
      * @return String que contiene todos los datos del paciente que maneja el sistema
      */
     public String consultarHistoriaClinicaPaciente(String idPaciente) {
-        Paciente paciente = searchPacienteById(idPaciente);
+        Paciente paciente = (Paciente) searchUserById(idPaciente);
         if(paciente == null){
             return "Paciente no encontrado";
         }
@@ -365,7 +380,7 @@ public class Service {
      * @return retorna el paciente siempre y cuando se encuentre guardado en la lista
      */
     public Paciente verPaciente(String idPaciente) {
-        return searchPacienteById(idPaciente);
+        return (Paciente) searchUserById(idPaciente);
     }
 
     /**
@@ -397,7 +412,7 @@ public class Service {
      * @return el consultorio que le toca al medico
      */
     public Consultorio verConsultorioAsignado(String idMedico) {
-        Medico medico = searchMedicoById(idMedico);
+        Medico medico = (Medico) searchUserById(idMedico);
         if(medico != null && medico.getConsultorioAsignado() != null){
             return searchConsultorioByNumero(medico.getConsultorioAsignado());
         }
@@ -495,8 +510,14 @@ public class Service {
      */
     public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
         Medico nuevoMedico = new Medico(id, nombre, apellido, telefono, email, password, especialidad);
+        for (Medico m : gestionarUsuario.getMedicos()) {
+            if (m.getId().equals(id)) {
+                System.out.println("Ya existe un recepcionista con ese ID");
+                return null;
+            }
+        }
         medicos.add(nuevoMedico);
-        gestionarUsuario.agregarUsuario(nuevoMedico);
+        gestionarUsuario.getMedicos().add(nuevoMedico);
         gestionarUsuario.guardarEnArchivo();
         return nuevoMedico;
     }
@@ -523,7 +544,7 @@ public class Service {
         }
         Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido, telefono, email, password, state);
         recepcionistas.add(nuevoRecepcionista);
-        gestionarUsuario.agregarUsuario(nuevoRecepcionista);
+        gestionarUsuario.getRecepcionistas().add(nuevoRecepcionista);
         gestionarUsuario.guardarEnArchivo();
         System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
         return nuevoRecepcionista;
@@ -548,8 +569,14 @@ public class Service {
                                       String fechaNacimiento, String tipoSangre, String sexo) {
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, telefono, email, password,
                 historiaClinica, fechaNacimiento, tipoSangre, sexo);
+        for (Paciente p : gestionarUsuario.getPacientes()){
+            if (p.getId().equals(id)) {
+                System.out.println("Ya existe un recepcionista con ese ID");
+                return null;
+            }
+        }
         pacientes.add(nuevoPaciente);
-        gestionarUsuario.agregarUsuario(nuevoPaciente);
+        gestionarUsuario.getPacientes().add(nuevoPaciente);
         gestionarUsuario.guardarEnArchivo();
         return nuevoPaciente;
     }
@@ -562,7 +589,7 @@ public class Service {
      * @return Si se le asignó el consultorio o si no se pudo asignar.
      */
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
-        Medico medico = searchMedicoById(idMedico);
+        Medico medico = (Medico) searchUserById(idMedico);
         Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
 
         if(medico != null && consultorio != null) {
@@ -578,7 +605,7 @@ public class Service {
      * @return Información del paciente.
      */
     public String consultarPaciente(String idPaciente) {
-        Paciente paciente = searchPacienteById(idPaciente);
+        Paciente paciente = (Paciente) searchUserById(idPaciente);
         if (paciente != null) {
             return paciente.toString();
         }
@@ -591,7 +618,7 @@ public class Service {
      * @return Información del médico.
      */
     public String consultarMedico(String idMedico) {
-        Medico medico = searchMedicoById(idMedico);
+        Medico medico = (Medico) searchUserById(idMedico);
         if(medico != null) {
             return medico.toString();
         }
@@ -606,7 +633,7 @@ public class Service {
      */
     public boolean consultarDisponibilidadMedico(String idMedico, LocalDateTime fecha) {
 
-        Medico medico = searchMedicoById(idMedico);
+        Medico medico = (Medico) searchUserById(idMedico);
         if(medico == null) {
             return false;
         }

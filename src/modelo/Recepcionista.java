@@ -43,6 +43,21 @@ public class Recepcionista extends Usuario {
         this.state = state;
     }
 
+    public static Recepcionista fromCSV(String csv) {
+        String[] line = csv.split(";");
+        return new Recepcionista(line[0], line[1],  line[2], line[3], line[4], line[5], line[6]);
+    }
+
+    @Override
+    public String toCSV(){
+        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + state;
+    }
+
+    @Override
+    public String getTipo() {
+        return "Recepcionista";
+    }
+
     /**
      * Formato para imprimir que contiene los datos basicos del recepcionista
      * @return String con la informacion del recepcionista

@@ -10,13 +10,13 @@ package modelo;
  * Clase base la cual representa las caracteristicas basicas de todos los usuarios del sistema
  */
 
-public class Usuario {
-    private String id;
-    private String nombre;
-    private String apellido;
-    private String telefono;
-    private String email;
-    private String password;
+public abstract class Usuario {
+    protected String id;
+    protected String nombre;
+    protected String apellido;
+    protected String telefono;
+    protected String email;
+    protected String password;
 
     /**
      * Constructor de la clase Usuario
@@ -92,14 +92,8 @@ public class Usuario {
         return nombre + " " + apellido;
     }
 
-    public String toCSV(){
-        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password;
-    }
-
-    public static Usuario fromCSV(String csv){
-        String[] line = csv.split(";");
-        return new Usuario(line[0], line[1], line[2], line[3], line[4], line[5]);
-    }
+    public abstract String getTipo();
+    public abstract String toCSV();
 
     /**
      * Formato para imprimir los datos del usuario
