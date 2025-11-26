@@ -55,12 +55,4 @@ public enum citaState {
     citaState(String descripcion) {
         this.descripcion = descripcion;
     }
-
-    /**
-     * Obtiene la descripcion del estado de la cita
-     * @return String que describe el estado de la cita
-     */
-    public String getDescripcion() {
-        return descripcion;
-    }
 }

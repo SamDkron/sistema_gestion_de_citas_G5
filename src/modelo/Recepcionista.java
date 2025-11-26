@@ -44,6 +44,9 @@ public class Recepcionista extends Usuario {
     }
 
     public static Recepcionista fromCSV(String csv) {
+        if (csv == null || csv.trim().isEmpty()) {
+            return null;
+        }
         String[] line = csv.split(";");
         return new Recepcionista(line[0], line[1],  line[2], line[3], line[4], line[5], line[6]);
     }

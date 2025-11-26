@@ -91,11 +91,14 @@ public class Paciente extends Usuario {
 
     @Override
     public String toCSV() {
-        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + fechaNacimiento + ";" + historiaClinica + ";" + tipoSangre;
+        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + fechaNacimiento + ";" + historiaClinica + ";" + tipoSangre+ ";" + sexo;
     }
 
 
     public static Paciente fromCSV(String csv) {
+        if (csv == null || csv.trim().isEmpty()) {
+            return null;
+        }
         String[] line = csv.split(";");
         return new Paciente(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9]);
     }

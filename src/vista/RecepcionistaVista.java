@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class RecepcionistaVista extends JFrame {
     private String nombreCompleto;
@@ -66,6 +67,27 @@ public class RecepcionistaVista extends JFrame {
         panel.add(btnCerrarSesion, BorderLayout.EAST);
 
         return panel;
+    }
+    private LocalDateTime parseFecha(String input) {
+        if (input == null) throw new IllegalArgumentException("Fecha nula");
+        String s = input.trim().replace('\u00A0', ' ').replaceAll("\\s+", " ");
+        s = s.replace('-', '/').replace('.', '/').replace(',', '/');
+        s = s.replaceAll("[^0-9/:\\s]", "").trim();
+
+        DateTimeFormatter[] formatos = new DateTimeFormatter[] {
+                DateTimeFormatter.ofPattern("d/M/yyyy H:mm"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"),
+                DateTimeFormatter.ofPattern("d/M/yyyy H:mm:ss")
+        };
+
+        for (DateTimeFormatter fmt : formatos) {
+            try {
+                return LocalDateTime.parse(s, fmt);
+            } catch (DateTimeParseException ignored) { }
+        }
+
+        throw new IllegalArgumentException("Formato de fecha inválido. Use: dd/MM/yyyy HH:mm");
     }
 
     private JPanel crearPanelOpciones() {
@@ -270,7 +292,7 @@ public class RecepcionistaVista extends JFrame {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                LocalDateTime fecha = LocalDateTime.parse(txtFecha.getText(), formatter);
+                LocalDateTime fecha = LocalDateTime.parse(txtFecha.getText().trim(), formatter);
 
                 boolean exito = controlador.asignarConsultorioAMedico(
                         txtIdMedico.getText().trim(),

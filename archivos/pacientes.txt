@@ -1,0 +1,4 @@
+P001;María;López;777-1001;mlopez@hmail.com;paciente120;15/03/1985;HC-001;O+;Femenino
+P002;Juan;Plata;777-1002;jplata@hmail.com;paciente121;22/07/1990;HC-002;A+;Masculino
+P003;Camilo;Medina;777-1003;cmedina@hmail.com;paciente122;5/01/2005;HC-003;B-;Masculino
+P004;Laura;Fernández;777-1004;lfernandez@hmail.com;paciente123;10/11/1978;HC-004;B+;Femenino

@@ -1,0 +1,5 @@
+1;Mar caribe norte, piso 2;true
+2;Mar caribe sur, piso 1;true
+3;Mar caribe sur, piso 2;true
+4;Mar caribe norte, piso 1;true
+5;Mar caribe sur, piso 2;true

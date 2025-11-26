@@ -1,0 +1,4 @@
+M001;Carlos;Ramírez;555-0101;cramirez@hospital.com;doc121;Medicina General
+M002;Ana;Martínez;555-0102;amartinez@hospital.com;doc122;Cardiología
+M003;Luis;González;555-0103;lgonzalez@hospital.com;doc123;Pediatría
+M004;José;Mosquera;555-0155;@jmosquera@hospital.com;doc124;Neurología

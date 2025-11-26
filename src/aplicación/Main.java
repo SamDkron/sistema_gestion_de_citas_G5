@@ -7,10 +7,11 @@
 package aplicación;
 
 import controlador.Controlador;
+import javax.swing.SwingUtilities;
+import modelo.GestionarUsuario;
+import service.InicializarDatos;
 import service.Service;
 import vista.Vista;
-
-import javax.swing.SwingUtilities;
 
 /**
  * Método principal del sistema.
@@ -19,7 +20,10 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Service service = new Service();
+            GestionarUsuario gestionarUsuario = new GestionarUsuario();
+            InicializarDatos inicializador = new InicializarDatos(gestionarUsuario);
+            inicializador.inicializarDatosEjemplo();
+            Service service = new Service(gestionarUsuario);
             Controlador controlador = new Controlador(service);
             Vista vista = new Vista(controlador);
             vista.setVisible(true);

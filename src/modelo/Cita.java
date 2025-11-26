@@ -7,11 +7,12 @@
 package modelo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Clase que representa una cita medica dentro del sistema.
  * Contiene la informacion basica de los participantes de la cita, es decir:
- * el paciente, el medico y otros datos basicos de la cita.
+ * el paciente, el medico y otros datos basicos de la cita como el lugar y la fecha.
  */
 public class Cita {
     private String id;
@@ -24,6 +25,8 @@ public class Cita {
     private String tratamiento;
     private String motivo;
     private LocalDateTime fecha;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
     /**
      * Constructor de la clase cita, crea una nueva cita cada que se instancia
@@ -51,12 +54,8 @@ public class Cita {
     /**
      * @return String con el ID de la cita medica
      */
-    public String getId() {
-        return id;
-    }
-
     /**
-     * @return Paciente que va a participar en la cita medica
+     * @return Paciente que va a participar en la cita médica
      */
     public Paciente getPaciente() {
         return paciente;
@@ -70,38 +69,10 @@ public class Cita {
     }
 
     /**
-     * @return String con el motivo de la cita medica
-     */
-    public String getMotivo() {
-        return motivo;
-    }
-
-    /**
      * @return Fecha y hora en la que se va a realizar la cita
      */
     public LocalDateTime getFecha() {
         return fecha;
-    }
-
-    /**
-     * @return Stringo con el tratamiento propuesto por el medico para el paciente
-     */
-    public String getTratamiento() {
-        return tratamiento;
-    }
-
-    /**
-     * @return String con el diagnostico realizado por el medico
-     */
-    public String getDiagnostico() {
-        return diagnostico;
-    }
-
-    /**
-     * @return Observaciones realizadas por el medico
-     */
-    public String getObservaciones() {
-        return observaciones;
     }
 
     /**
@@ -116,14 +87,6 @@ public class Cita {
      */
     public Medico getMedico() {
         return medico;
-    }
-
-    /**
-     * @param estadoCita Estado nuevo que se le asignara a la cita.
-     *                   Solo puede estar dentro de los estados establecidos en la clase citaState
-     */
-    public void setEstadoCita(citaState estadoCita) {
-        this.estadoCita = estadoCita;
     }
 
     /**
@@ -154,20 +117,11 @@ public class Cita {
         this.diagnostico = diagnostico;
     }
 
-    //cambiar estado de las citas
-
     /**
      * Cambia el estado de la cita a CANCELADA si la cita se llega a cancelar
      */
     public void cancelarCita() {
         this.estadoCita = citaState.CANCELADA;
-    }
-
-    /**
-     * Cambia el estado de la cita a CONFIRMADA
-     */
-    public void aceptarCita() {
-        this.estadoCita = citaState.CONFIRMADA;
     }
 
     /**
@@ -177,12 +131,94 @@ public class Cita {
         this.estadoCita = citaState.COMPLETADA;
     }
 
+    public void setEstadoCita(citaState nuevoEstado) {
+        this.estadoCita = nuevoEstado;
+    }
+
     /**
      * Cambia el estado de la cita a EN_ATENCION si la cita se encuentra en atencion
      */
     public void iniciarAtencion() {
         this.estadoCita = citaState.EN_ATENCION;
 
+    }
+
+    private static String escape(String s) {
+        if (s == null) return "";
+        return s.replace(";", ",").replace("\n", " ").replace("\r", " ").trim();
+    }
+    private static final DateTimeFormatter WRITE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter READ_FORMATTER = WRITE_FORMATTER;
+
+    public String toCSV() {
+        String pacienteId = paciente != null ? paciente.getId() : "";
+        String medicoId = medico != null ? medico.getId() : "";
+        String consultorioNum = consultorio != null ? consultorio.getNumero() : "";
+        String fechaStr = fecha != null ? fecha.format(WRITE_FORMATTER) : "";
+        String estado = estadoCita != null ? estadoCita.name() : "";
+
+        return String.join(";",
+                id,
+                pacienteId,
+                medicoId,
+                consultorioNum,
+                escape(motivo),
+                fechaStr,
+                estado
+        );
+    }
+
+    public static Cita fromCSV(String csv, GestionarUsuario gu) {
+        if (csv == null || csv.trim().isEmpty()) return null;
+        String[] cols = csv.split(";", -1);
+        if (cols.length < 6) return null;
+
+        String id = cols[0].trim();
+        String pacienteId = cols.length > 1 ? cols[1].trim() : "";
+        String medicoId = cols.length > 2 ? cols[2].trim() : "";
+        String consultorioNum = cols.length > 3 ? cols[3].trim() : "";
+        String motivo = cols.length > 4 ? cols[4].trim() : "";
+        String fechaStr = cols.length > 5 ? cols[5].trim() : "";
+        String estadoStr = cols.length > 6 ? cols[6].trim() : "";
+
+        Paciente paciente = null;
+        Medico medico = null;
+        Consultorio consultorio = null;
+        LocalDateTime fecha = null;
+
+        if (!pacienteId.isEmpty()) paciente = getPacienteById(pacienteId, gu);
+        if (!medicoId.isEmpty()) medico = getMedicoById(medicoId, gu);
+        if (!consultorioNum.isEmpty()) consultorio = getConsultorioByNumero(consultorioNum, gu);
+
+        if (!fechaStr.isEmpty()) {
+            try {
+                fecha = LocalDateTime.parse(fechaStr, READ_FORMATTER);
+            } catch (DateTimeParseException ignored) { fecha = null; }
+        }
+
+        Cita c = new Cita(id, paciente, medico, consultorio, motivo, fecha);
+        if (!estadoStr.isEmpty()) {
+            try { c.estadoCita = citaState.valueOf(estadoStr); } catch (Exception ignored) {}
+        }
+        return c;
+    }
+    private static Paciente getPacienteById(String id, GestionarUsuario gu) {
+        if (id == null || gu == null) return null;
+        for (Paciente p : gu.getPacientes()) if (id.equals(p.getId())) return p;
+        return null;
+    }
+    private static Medico getMedicoById(String id, GestionarUsuario gu) {
+        if (id == null || gu == null) return null;
+        for (Medico m : gu.getMedicos()) if (id.equals(m.getId())) return m;
+        return null;
+    }
+    private static Consultorio getConsultorioByNumero(String numero, GestionarUsuario gu) {
+        if (numero == null || gu == null) return null;
+        for (Consultorio c : gu.getConsultorios()) if (numero.equals(c.getNumero())) return c;
+        return null;
+    }
+    public String getId() {
+        return id;
     }
 
     /**

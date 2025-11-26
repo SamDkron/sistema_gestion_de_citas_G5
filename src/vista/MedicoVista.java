@@ -15,11 +15,11 @@ import java.awt.*;
  * Muestra las funcionalidades disponibles para el médico
  */
 public class MedicoVista extends JFrame {
-    private String idMedico;
-    private String nombreCompleto;
-    private String especialidad;
-    private String consultorioAsignado;
-    private Controlador controlador;
+    private final String idMedico;
+    private final String nombreCompleto;
+    private final String especialidad;
+    private final String consultorioAsignado;
+    private final Controlador controlador;
 
     /**
      * Constructor de la vista del médico.
@@ -197,30 +197,41 @@ public class MedicoVista extends JFrame {
      */
     private void atenderCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita:");
-        if (idCita != null && !idCita.trim().isEmpty()) {
-            String diagnostico = JOptionPane.showInputDialog(this, "Diagnóstico:");
-            if (diagnostico != null && !diagnostico.trim().isEmpty()) {
-                String tratamiento = JOptionPane.showInputDialog(this, "Tratamiento:");
-                if (tratamiento != null && !tratamiento.trim().isEmpty()) {
-                    String observaciones = JOptionPane.showInputDialog(this, "Observaciones:");
+        if (idCita == null) return;
+        idCita = idCita.trim();
+        if (idCita.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "ID de cita vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-                    String resultado = controlador.procesarAtencionCita(
-                            idCita,
-                            diagnostico,
-                            tratamiento,
-                            observaciones != null ? observaciones : ""
-                    );
+        String diagnostico = JOptionPane.showInputDialog(this, "Diagnóstico:");
+        if (diagnostico == null || diagnostico.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Diagnóstico requerido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        diagnostico = diagnostico.trim();
 
-                    if (resultado == null) {
-                        JOptionPane.showMessageDialog(this,
-                                "Cita atendida exitosamente",
-                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, resultado,
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
+        String tratamiento = JOptionPane.showInputDialog(this, "Tratamiento:");
+        if (tratamiento == null || tratamiento.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tratamiento requerido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        tratamiento = tratamiento.trim();
+
+        String observaciones = JOptionPane.showInputDialog(this, "Observaciones:");
+        observaciones = (observaciones == null) ? "" : observaciones.trim();
+
+        String resultado = controlador.procesarAtencionCita(
+                idCita,
+                diagnostico,
+                tratamiento,
+                observaciones
+        );
+
+        if (resultado == null) {
+            JOptionPane.showMessageDialog(this, "Cita atendida exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, resultado, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -270,17 +281,18 @@ public class MedicoVista extends JFrame {
      */
     private void cancelarCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
-        if (idCita != null && !idCita.trim().isEmpty()) {
-            String resultado = controlador.procesarCancelacionCita(idCita, idMedico);
+        if (idCita == null) return;
+        idCita = idCita.trim();
+        if (idCita.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "ID de cita vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (resultado == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Cita cancelada exitosamente",
-                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, resultado,
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
+        String resultado = controlador.procesarCancelacionCita(idCita);
+        if (resultado == null) {
+            JOptionPane.showMessageDialog(this, "Cita cancelada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, resultado, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

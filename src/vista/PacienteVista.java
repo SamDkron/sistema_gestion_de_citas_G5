@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Vista principal para el paciente
@@ -48,6 +49,36 @@ public class PacienteVista extends JFrame {
         panelPrincipal.add(panelOpciones, BorderLayout.CENTER);
 
         setContentPane(panelPrincipal);
+    }
+
+    /**
+     * Parseador tolerante de fecha sin dependencias externas.
+     * Acepta formatos tipo: d/M/yyyy H:mm, dd/MM/yyyy HH:mm, con o sin segundos.
+     * Lanza IllegalArgumentException si no puede parsear.
+     */
+    private LocalDateTime parseFecha(String input) {
+        if (input == null) throw new IllegalArgumentException("Fecha nula");
+        String s = input.trim().replace('\u00A0', ' ').replaceAll("\\s+", " ");
+        // Normalizar separadores comunes a '/'
+        s = s.replace('-', '/').replace('.', '/').replace(',', '/');
+
+        // Eliminar caracteres inesperados (dejar solo dígitos, '/', ':', espacios)
+        s = s.replaceAll("[^0-9/:\\s]", "").trim();
+
+        DateTimeFormatter[] formatos = new DateTimeFormatter[] {
+                DateTimeFormatter.ofPattern("d/M/yyyy H:mm"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"),
+                DateTimeFormatter.ofPattern("d/M/yyyy H:mm:ss")
+        };
+
+        for (DateTimeFormatter fmt : formatos) {
+            try {
+                return LocalDateTime.parse(s, fmt);
+            } catch (DateTimeParseException ignored) { }
+        }
+
+        throw new IllegalArgumentException("Formato de fecha inválido. Use: dd/MM/yyyy HH:mm");
     }
 
     /**
@@ -192,7 +223,7 @@ public class PacienteVista extends JFrame {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                LocalDateTime fecha = LocalDateTime.parse(txtFecha.getText(), formatter);
+                LocalDateTime fecha = LocalDateTime.parse(txtFecha.getText().trim(), formatter);
 
                 String resultado = controlador.procesarReservaCita(
                         idPaciente,
@@ -225,7 +256,7 @@ public class PacienteVista extends JFrame {
     private void cancelarCita() {
         String idCita = JOptionPane.showInputDialog(this, "Ingrese el ID de la cita a cancelar:");
         if (idCita != null && !idCita.trim().isEmpty()) {
-            String resultado = controlador.procesarCancelacionCita(idCita, idPaciente);
+            String resultado = controlador.procesarCancelacionCita(idCita);
 
             if (resultado == null) {
                 JOptionPane.showMessageDialog(this,
@@ -251,7 +282,7 @@ public class PacienteVista extends JFrame {
             if (nuevaFecha != null && !nuevaFecha.trim().isEmpty()) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                    LocalDateTime fecha = LocalDateTime.parse(nuevaFecha, formatter);
+                    LocalDateTime fecha = LocalDateTime.parse(nuevaFecha.trim(), formatter);
 
                     String resultado = controlador.procesarReprogramacionCita(idCita, fecha);
 

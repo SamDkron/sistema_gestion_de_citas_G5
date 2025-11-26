@@ -18,7 +18,7 @@ import java.util.List;
 public class Medico extends Usuario {
     private String consultorioAsignado;
     private final String especialidad;
-    private List<Cita> agenda;
+    private final List<Cita>  agenda;
 
     /**
      * Constructor de la clase que crea un medico con toda la informacion proporcionada.
@@ -87,13 +87,16 @@ public class Medico extends Usuario {
     }
 
     public static Medico fromCSV(String csv) {
+        if (csv == null || csv.trim().isEmpty()) {
+            return null;
+        }
         String[] line = csv.split(";");
         return new Medico(line[0], line[1],  line[2], line[3], line[4], line[5], line[6]);
     }
 
     @Override
     public String toCSV(){
-        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + especialidad + ";" + consultorioAsignado;
+        return id + ";" + nombre + ";" + apellido + ";" + telefono + ";" + email + ";" + password + ";" + especialidad;
     }
 
     @Override

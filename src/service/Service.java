@@ -1,9 +1,3 @@
-/**
- * @author Samuel David Dau Fernández
- * @author Santiago Duica Plata
- * @author Gustavo Daniel Olivos Rodríguez
- */
-
 package service;
 
 import data.DatosEjemplo;
@@ -13,60 +7,42 @@ import java.util.*;
 import java.util.stream.Collectors;
 import modelo.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+
 /**
  * Archivo 'service' que contiene toda la logica de negocio del programa.
- * <p>
- *     aca esta la logica de la mayoria de los metodos que fueron ideados en los diagramas y
- *     gestiona las citas, pacientes, medicos, recepcionistas y consultorios
- * </p>
  */
-
 public class Service {
     private final List<Cita> citas;
-    private final List<Medico> medicos;
-    private final List<Paciente> pacientes;
-    private final List<Consultorio> consultorios;
-    private final List<Recepcionista> recepcionistas;
     private final GestionarUsuario gestionarUsuario;
     private int contadorCitas;
+
+    // Archivo donde se persisten las citas (puedes cambiar la ruta si quieres)
+    private static final Path CITAS_FILE = Paths.get("data", "citas.txt");
+    private static final DateTimeFormatter FILE_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     /**
      * constructor del programa
      */
-    public Service() {
+    public Service(GestionarUsuario gestionarUsuario) {
         this.citas = new ArrayList<>();
-        this.medicos = new ArrayList<>();
-        this.pacientes = new ArrayList<>();
-        this.consultorios = new ArrayList<>();
-        this.recepcionistas = new ArrayList<>();
-        this.gestionarUsuario = new GestionarUsuario();
-        gestionarUsuario.cargarDesdeArchivo();
+        this.gestionarUsuario = gestionarUsuario;
         this.contadorCitas = 1;
 
-        this.recepcionistas.addAll(DatosEjemplo.inicializarRecepcionista());
-        this.consultorios.addAll(DatosEjemplo.inicializarConsultorioEJ());
-        this.medicos.addAll(DatosEjemplo.inicializarMedicoEJ());
-        this.pacientes.addAll(DatosEjemplo.inicializarPacienteEJ());
-
+        // Cargar citas desde archivo al iniciar
+        cargarCitasDesdeArchivo();
     }
 
     /**
      * metodo encargado de generar un id a cada cita nueva que se genere
      */
-
-    private String generadorIdCita(){
+    public String generadorIdCita(){
         return String.format("CITA-A%07d", contadorCitas++);
     }
 
-    /**
-     * estos metodos se encargan de realizar busquedas
-     * <p>
-     *     buscan pacientes, medicos y citas mediante su id unico y buscan
-     *     consultorios mediante su numero.
-     * </p>
-     * @param id ID unica del usuario
-     * @return Paciente / Medico si se encuentra el id, null en caso contrario
-     */
+    // -------------------- búsquedas -------------------- //
 
     public Usuario searchUserById(String id){
         for(Usuario paciente : gestionarUsuario.getPacientes()){
@@ -80,7 +56,7 @@ public class Service {
                 return medico;
             }
         }
-        
+
         for(Usuario Recepcionista : gestionarUsuario.getRecepcionistas()){
             if(Recepcionista.getId().equals(id)){
                 return Recepcionista;
@@ -90,13 +66,8 @@ public class Service {
         return null;
     }
 
-    /**
-     *
-     * @param numero numero del consultorio
-     * @return Consultorio si se encuentra el id, null si no se encuentra
-     */
     public Consultorio searchConsultorioByNumero(String numero) {
-        for (Consultorio c1 : consultorios) {
+        for (Consultorio c1 : gestionarUsuario.getConsultorios()) {
             if (c1.getNumero().equals(numero)) {
                 return c1;
             }
@@ -105,24 +76,36 @@ public class Service {
     }
 
     /**
-     *
-     * @param id ID unica de la cita
-     * @return Cita si se encuentra la cita, null en caso contrario
+     * Agrega una cita en memoria y persiste inmediatamente a archivo.
      */
+    public void agregarCita(Cita cita){
+        citas.add(cita);
+        if (cita.getMedico() != null) {
+            cita.getMedico().agregarCita(cita);
+        }
+        guardarCitasEnArchivo();
+    }
+
+    public Cita crearCita(String id, Paciente paciente, Medico medico, Consultorio consultorio, String motivo, LocalDateTime fecha){
+        Cita nuevaCita = new Cita( id,  paciente,  medico,  consultorio, motivo, fecha);
+
+        agregarCita(nuevaCita);
+
+        return nuevaCita;
+    }
+
     public Cita searchCitaById(String id) {
-        for (Cita c1 : citas) {
-            if (c1.getId().equals(id)) {
-                return c1;
+        if (id == null) return null;
+        String buscado = id.trim();
+        if (buscado.isEmpty()) return null;
+
+        for (Cita c : gestionarUsuario.getCitas()) {
+            if (c != null && c.getId() != null && c.getId().trim().equalsIgnoreCase(buscado)) {
+                return c;
             }
         }
         return null;
     }
-
-    /**
-     * metodo que muestra todas las citas del paciente que se le ingrese
-     * @param idPaciente ID del paciente
-     * @return Lista que contiene todas las citas del paciente
-     */
 
     public List<Cita> verCitasPaciente(String idPaciente) {
         return citas.stream()
@@ -132,11 +115,6 @@ public class Service {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * metodo que muestra todas las citas que el medico tiene en su agenda
-     * @param idMedico ID del medico
-     * @return Lista que contiene todas las citas que tiene el medico en su agenda
-     */
     public List<Cita> verAgendaMedico(String idMedico) {
         return citas.stream()
                 .filter(cita -> cita.getMedico().getId().equals(idMedico))
@@ -144,17 +122,6 @@ public class Service {
                 .sorted(Comparator.comparing(Cita::getFecha))
                 .collect(Collectors.toList());
     }
-
-    /*
-     * Metodos que validan si la hora de una cita no se solapa o se cruza con la hora de otra cita.
-     * Se utiliza para validar el horario o la disponibilidad del medico y del consultorio.
-     */
-
-    /**
-     * @param medico objeto de clase Medico
-     * @param fechaHora hora de la cita nueva
-     * @return true o false dependiendo de la disponibilidad del medico
-     */
 
     public boolean validarHorarioMedico(Medico medico, LocalDateTime fechaHora){
         LocalDateTime finalCita = fechaHora.plusMinutes(30);
@@ -168,12 +135,6 @@ public class Service {
                 });
     }
 
-    /**
-     *
-     * @param consultorio objeto de clase Consultorio
-     * @param fechaHora hora de la nueva cita
-     * @return true o false dependiendo de si esta disponible el consultorio en la hora de la cita
-     */
     public boolean validarHorarioConsultorio(Consultorio consultorio, LocalDateTime fechaHora){
         LocalDateTime finalCita = fechaHora.plusMinutes(30);
         return citas.stream()
@@ -185,17 +146,6 @@ public class Service {
                     return fechaHora.isBefore(finCitaCreada) && finalCita.isAfter(inicioCitaCreada);
                 });
     }
-
-    /**
-     * metodo encargado de evaluar las credenciales de los usuarios en los inicios de sesion
-     * <p>
-     *     comprueba si el id y la contraseña ingresada coinciden con algun
-     *     usuario que se encuentre en el archivo
-     * </p>
-     * @param id ID unica del usuario
-     * @param password contraseña del usuario
-     * @return
-     */
 
     public Usuario iniciarSesion (String id, String password){
         if(id == null  || id.trim().isEmpty()){
@@ -230,86 +180,61 @@ public class Service {
 
     public String identificarTipoUsuario(Usuario usuario){
         if(usuario == null) return "Desconocido";
-        return usuario.getTipo(); //Puede entrar cualquier objeto que herede de usuario y va directamente al metodo override en la subclase
+        return usuario.getTipo();
     }
 
     /**
-     * metodo para reservar o apartar una cita medica
-     * <p>
-     *     reserva una cita medica siempre y cuando todos los parametros esten disponibles,
-     *     dado caso que ocurra algun fallo, el programa lanza una excepcion
-     * </p>
-     * @param idPaciente id del paciente
-     * @param idMedico id del medico
-     * @param numeroConsultorio numero del consultorio en el que se va a realizar la cita
-     * @param motivo motivo de la cita
-     * @param fecha fecha en la que se quiere apartar la cita
-     * @return Cita si todos los parametros pasan y no ocurre ningun fallo y si la hora no se cruza con otra cita
+     * Reserva una cita (persistida automáticamente mediante agregarCita)
      */
-
     public Cita reservarCita(String idPaciente, String idMedico, String numeroConsultorio, String motivo, LocalDateTime fecha) {
-        Paciente paciente = (Paciente) searchUserById(idPaciente);
-        Medico medico = (Medico) searchUserById(idMedico);
-        Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
 
-        if(fecha.isBefore(LocalDateTime.now())){
-            throw new IllegalArgumentException("La fecha y hora de la cita no puede ser en el pasado.");
-        }
+        Paciente p = null; for (Paciente px: gestionarUsuario.getPacientes()) if (idPaciente.equals(px.getId())) { p = px; break; }
+        Medico m = null; for (Medico mx: gestionarUsuario.getMedicos()) if (idMedico.equals(mx.getId())) { m = mx; break; }
+        Consultorio c = null; for (Consultorio cx: gestionarUsuario.getConsultorios()) if (numeroConsultorio.equals(cx.getNumero())) { c = cx; break; }
 
-        if(paciente == null || medico == null || consultorio == null){
-            throw new IllegalArgumentException("ERROR!. Alguno de los datos ingresados no es válido.");
-        }
+        if (p == null) throw new IllegalArgumentException("Paciente no encontrado: " + idPaciente);
+        if (m == null) throw new IllegalArgumentException("Médico no encontrado: " + idMedico);
+        if (c == null) throw new IllegalArgumentException("Consultorio no encontrado: " + numeroConsultorio);
+        if (fecha == null) throw new IllegalArgumentException("Fecha inválida");
+        if (fecha.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("La fecha debe ser futura");
 
-        // Si el médico no tiene consultorio asignado, asignarle el seleccionado
-        if(medico.getConsultorioAsignado() == null || medico.getConsultorioAsignado().isEmpty()){
-            medico.setConsultorioAsignado(numeroConsultorio);
-        }
+        String newId = "C" + (gestionarUsuario.getCitas().size() + 1);
 
-        if(!validarHorarioMedico(medico, fecha)){
-            throw new IllegalArgumentException("El médico no está disponible en la fecha y hora seleccionadas.");
-        }
+        Cita cita = new Cita(newId, p, m, c, motivo, fecha);
 
-        if(!validarHorarioConsultorio(consultorio, fecha)){
-            throw new IllegalArgumentException("El consultorio no está disponible en la fecha y hora seleccionadas.");
-        }
+        gestionarUsuario.agregarCita(cita);
+        gestionarUsuario.guardarEnArchivo();
 
-        String idCita = generadorIdCita();
-        Cita nuevaCita = new Cita(idCita, paciente, medico, consultorio, motivo, fecha);
-        citas.add(nuevaCita);
-        medico.agregarCita(nuevaCita);
-        return nuevaCita;
+        return cita;
     }
 
     /**
-     * metodo que se encarga de cancelar la cita que reciba como parametro
-     * <p>
-     *     recibe el id de la cita a cancelar y del paciente que apartó la cita.
-     *     si el usuario existe y si la cita existe y no esta cancelada, terminada
-     *     o en atencion, la cancela, caso contrario lanza una excepcion
-     * </p>
-     * @param idCita ID  de la cita a cancelar
-     * @param idPaciente ID del paciente
-     * @return true o false si la cita se canceló con exito
+     * Cancela una cita y persiste el cambio
      */
-    public boolean cancelarCita(String idCita, String idPaciente) {
-        Cita cita = searchCitaById(idCita);
-        if (cita != null && cita.getPaciente().getId().equals(idPaciente)) {
-            if (cita.getEstadoCita() == citaState.PENDIENTE || cita.getEstadoCita() == citaState.CONFIRMADA) {
-                cita.cancelarCita();
-                return true;
-            } else {
-                throw new IllegalStateException("La cita no se puede cancelar porque ya ha sido atendida o cancelada.");
+    public boolean cancelarCita(String idCita) {
+        if (idCita == null) return false;
+        String buscado = idCita.trim();
+        if (buscado.isEmpty()) return false;
+
+        Cita cita = searchCitaById(buscado);
+        if (cita == null) return false;
+
+
+        if (cita.getEstadoCita() == citaState.PENDIENTE || cita.getEstadoCita() == citaState.CONFIRMADA) {
+            cita.setEstadoCita(citaState.CANCELADA);
+
+            try {
+                gestionarUsuario.guardarEnArchivo();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return true;
         }
         return false;
     }
 
     /**
-     * metodo que se encarga de reprogramar cita siempre y cuando la cita no haya terminado o no haya sido cancelada
-     * y si el horario nuevo esta libre.
-     * @param idCita ID de la cita a reprogramar
-     * @param nuevaFecha nueva fecha de la cita
-     * @return true or false si el horario de la cita se encuentra disponible
+     * Reprograma y persiste
      */
     public boolean reprogramarCita(String idCita, LocalDateTime nuevaFecha) {
         Cita cita = searchCitaById(idCita);
@@ -327,13 +252,12 @@ public class Service {
         }
 
         cita.setFecha(nuevaFecha);
+        guardarCitasEnArchivo();
         return true;
     }
 
     /**
-     * metodo por el cual el paciente puede revisar su historia clinica
-     * @param idPaciente ID del paciente
-     * @return String que contiene todos los datos del paciente que maneja el sistema
+     * consultarHistoriaClinicaPaciente (sin cambios funcionales)
      */
     public String consultarHistoriaClinicaPaciente(String idPaciente) {
         Paciente paciente = (Paciente) searchUserById(idPaciente);
@@ -375,21 +299,7 @@ public class Service {
     //---------------metodos de medico---------------//
 
     /**
-     * metodo en el cual el medico puede revisar que paciente va a atender
-     * @param idPaciente ID del paciente
-     * @return retorna el paciente siempre y cuando se encuentre guardado en la lista
-     */
-    public Paciente verPaciente(String idPaciente) {
-        return (Paciente) searchUserById(idPaciente);
-    }
-
-    /**
-     * metodo en el que el medico da por atendida la cita
-     * @param idCita ID de la cita
-     * @param diagnostico diagnostico que el paciente la da al paciente
-     * @param tratamiento tratamiento establecido por el medico
-     * @param observaciones observaciones del medico
-     * @return true o false
+     * Atender cita
      */
     public boolean atenderCita(String idCita, String diagnostico, String tratamiento, String observaciones) {
         Cita cita = searchCitaById(idCita);
@@ -401,48 +311,39 @@ public class Service {
             cita.setTratamiento(tratamiento);
             cita.setObservaciones(observaciones);
             cita.completar();
+            Medico m = cita.getMedico();
+            if (m != null) {
+                boolean existe = false;
+                for (Cita cc : m.getAgenda()) {
+                    if (cc != null && cc.getId() != null && cc.getId().trim().equalsIgnoreCase(cita.getId().trim())) {
+                        existe = true;
+                        break;
+                    }
+                }
+                if (!existe) {
+                    m.getAgenda().add(cita);
+                }
+            }
+            guardarCitasEnArchivo();
             return true;
         }
         return false;
     }
 
     /**
-     * metodo en el cual el medico puede ver el consultorio que se le ha sido asignado
-     * @param idMedico ID del medico
-     * @return el consultorio que le toca al medico
+     * Remitir paciente: intenta buscar turno disponible y crea nueva cita (persistida por agregarCita) y marca completada la original
      */
-    public Consultorio verConsultorioAsignado(String idMedico) {
-        Medico medico = (Medico) searchUserById(idMedico);
-        if(medico != null && medico.getConsultorioAsignado() != null){
-            return searchConsultorioByNumero(medico.getConsultorioAsignado());
-        }
-        return null;
-    }
-
-    /**
-     * metodo que se encarga de remitir un paciente a otra especialidad
-     * <p>
-     *     este metodo se encarga de remitir un paciente a otra especialidad
-     *     dado caso que se llegue a necesitar. Este metodo verifica que exista
-     *     la cita con el id ingresado, busca medicos en la especialidad solicitada
-     *     y lo remite siempre y cuando se encuentren medicos en la especialidad
-     * </p>
-     * @param idCita ID de la cita
-     * @param especialidad especialidad que se necesita
-     * @param motivo motivo de la remision del paciente
-     * @return un String que contiene todos los datos de la remision del paciente siempre y cuando sea exitosa
-     */
-    public String remitirPaciente(String idCita, String especialidad, String motivo){
+    public String remitirPaciente(String idCita, String especialidad, String motivo) {
         Cita cita = searchCitaById(idCita);
-        if(cita == null){
+        if (cita == null) {
             throw new IllegalArgumentException("La cita no se encuentra.");
         }
 
-        List<Medico> especialistas = medicos.stream()
+        List<Medico> especialistas = gestionarUsuario.getMedicos().stream()
                 .filter(doc -> doc.getEspecialidad().equalsIgnoreCase(especialidad))
                 .collect(Collectors.toList());
 
-        if(especialistas.isEmpty()){
+        if (especialistas.isEmpty()) {
             return "No hay especialistas disponibles en la especialidad " + especialidad;
         }
 
@@ -452,62 +353,50 @@ public class Service {
         Paciente paciente = cita.getPaciente();
         Consultorio consultorioAsignado = null;
         LocalDateTime propuesta = LocalDateTime.now().plusHours(1);
-        int minutos = propuesta.getMinute() < 30 ? 0 : 30; // si los minutos tienen un valor menor que 30, se redondea a 30, si no se rendondea a cero
+
+        int minutos = propuesta.getMinute() < 30 ? 0 : 30;
         propuesta = propuesta.withMinute(minutos).withSecond(0).withNano(0);
+
         LocalDateTime limiteHorario = propuesta.plusDays(30);
 
-        while(!creada && !propuesta.isAfter(limiteHorario)){
-            if(validarHorarioMedico(medicoAsignado, propuesta)){
-                if(consultorioAsignado == null || !validarHorarioConsultorio(consultorioAsignado, propuesta)){
-                    for(Consultorio c: consultorios){
-                        if(validarHorarioConsultorio(c, propuesta)){
+        while (!creada && !propuesta.isAfter(limiteHorario)) {
+            if (validarHorarioMedico(medicoAsignado, propuesta)) {
+                if (consultorioAsignado == null || !validarHorarioConsultorio(consultorioAsignado, propuesta)) {
+                    for (Consultorio c : gestionarUsuario.getConsultorios()) {
+                        if (validarHorarioConsultorio(c, propuesta)) {
                             consultorioAsignado = c;
                             break;
                         }
                     }
                 }
 
-                if(consultorioAsignado != null){
+                if (consultorioAsignado != null) {
                     String idNuevaCita = generadorIdCita();
                     Cita nuevaCita = new Cita(idNuevaCita, paciente, medicoAsignado, consultorioAsignado, motivo, propuesta);
-                    citas.add(nuevaCita);
-                    medicoAsignado.agregarCita(nuevaCita);
+
+                    agregarCita(nuevaCita); // esto ya guarda el archivo
+
                     sb.append("\n ======= Cita creada para remision de paciente =======  \n");
-                    sb.append(nuevaCita).append("\n");// automaticamente se llama al metodo toString
+                    sb.append(nuevaCita).append("\n");
                     creada = true;
+
                     cita.completar();
+                    guardarCitasEnArchivo(); // guardar que la cita original quedó completada
                     break;
-                    //si logró agendar una cita, rompe el ciclo enseguida
                 }
             }
-            propuesta = propuesta.plusMinutes(30); // si no logra agendar cita en el horario, suma 30 minutos mas y vuelva a iterar hasta que encuentre un horario libre
+            propuesta = propuesta.plusMinutes(30);
         }
 
-        if(!creada) {
+        if (!creada) {
             sb.append("\n No se encontro un horario disponible con algun especialista en los proximos 30 dias. \n");
         }
 
         return sb.toString();
     }
 
-    //Metodos de recepcionista//
+    //--------------- metodos de recepcionista ---------------//
 
-    /**
-     * Registra un nuevo médico en el sistema.
-     * <p>
-     *     Crea una nueva instancia de la clase Medico con los datos proporcionados
-     *     y la añade a la lista de médicos registrados en el sistema.
-     * </p>
-     *
-     * @param id el identificador único del médico
-     * @param nombre el nombre del médico
-     * @param apellido el apellido del médico
-     * @param telefono el número de teléfono de contacto del médico
-     * @param email la dirección de correo electrónico del médico
-     * @param password la contraseña asignada al médico para acceder al sistema
-     * @param especialidad la especialidad médica del profesional
-     * @return el objeto Medico registrado con todos sus datos
-     */
     public Medico registrarMedico(String id, String nombre, String apellido, String telefono, String email, String password, String especialidad) {
         Medico nuevoMedico = new Medico(id, nombre, apellido, telefono, email, password, especialidad);
         for (Medico m : gestionarUsuario.getMedicos()) {
@@ -516,54 +405,27 @@ public class Service {
                 return null;
             }
         }
-        medicos.add(nuevoMedico);
         gestionarUsuario.getMedicos().add(nuevoMedico);
         gestionarUsuario.guardarEnArchivo();
         return nuevoMedico;
     }
 
-    /**
-     * Registra un nuevo recepcionista en el sistema
-     * @param id ID del recepcionista
-     * @param nombre Nombre del recepcionista
-     * @param apellido Apellido del recepcionista
-     * @param telefono Telefono del recepcionista
-     * @param email Email del recepcionista
-     * @param password Contraseña del recepcionista
-     * @param state Turno del recepcionista (Día/Noche)
-     * @return El objeto Recepcionista creado o null si ya existe
-     */
     public Recepcionista registrarRecepcionista(String id, String nombre, String apellido,
                                                 String telefono, String email, String password,
                                                 String state) {
-        for (Recepcionista r : recepcionistas) {
+        for (Recepcionista r : gestionarUsuario.getRecepcionistas()) {
             if (r.getId().equals(id)) {
                 System.out.println("Ya existe un recepcionista con ese ID");
                 return null;
             }
         }
         Recepcionista nuevoRecepcionista = new Recepcionista(id, nombre, apellido, telefono, email, password, state);
-        recepcionistas.add(nuevoRecepcionista);
         gestionarUsuario.getRecepcionistas().add(nuevoRecepcionista);
         gestionarUsuario.guardarEnArchivo();
         System.out.println("Recepcionista registrado exitosamente: " + nuevoRecepcionista.nombreCompleto());
         return nuevoRecepcionista;
     }
 
-    /**
-     * Método que crea un nuevo paciente y lo añade a la lista de los demás.
-     * @param id ID del paciente.
-     * @param nombre Nombre del paciente.
-     * @param apellido Apellido del paciente.
-     * @param telefono Telefono del paciente.
-     * @param email Email del paciente.
-     * @param password Contraseña del paciente.
-     * @param historiaClinica Historia clínica del paciente.
-     * @param fechaNacimiento Fecha de nacimiento del paciente.
-     * @param tipoSangre Tipo de sangre del paciente.
-     * @param sexo Sexo del paciente.
-     * @return El nuevo paciente.
-     */
     public Paciente registrarPaciente(String id, String nombre, String apellido, String telefono,
                                       String email, String password, String historiaClinica,
                                       String fechaNacimiento, String tipoSangre, String sexo) {
@@ -575,19 +437,11 @@ public class Service {
                 return null;
             }
         }
-        pacientes.add(nuevoPaciente);
         gestionarUsuario.getPacientes().add(nuevoPaciente);
         gestionarUsuario.guardarEnArchivo();
         return nuevoPaciente;
     }
 
-    /**
-     * Método para asignarle un consultorio a un médico.
-     * @param idMedico ID del médico.
-     * @param numeroConsultorio Numero del consultorio.
-     * @param fecha Fecha de cuando se le asignará el consultorio.
-     * @return Si se le asignó el consultorio o si no se pudo asignar.
-     */
     public boolean asignarConsultorioAMedico(String idMedico, String numeroConsultorio, LocalDateTime fecha) {
         Medico medico = (Medico) searchUserById(idMedico);
         Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
@@ -599,11 +453,6 @@ public class Service {
         return false;
     }
 
-    /**
-     * Método para ver la información de un paciente a partir de su ID.
-     * @param idPaciente ID del paciente.
-     * @return Información del paciente.
-     */
     public String consultarPaciente(String idPaciente) {
         Paciente paciente = (Paciente) searchUserById(idPaciente);
         if (paciente != null) {
@@ -612,11 +461,6 @@ public class Service {
         return null;
     }
 
-    /**
-     * Método para ver la información de un médico a partir de su ID.
-     * @param idMedico ID del médico.
-     * @return Información del médico.
-     */
     public String consultarMedico(String idMedico) {
         Medico medico = (Medico) searchUserById(idMedico);
         if(medico != null) {
@@ -625,52 +469,19 @@ public class Service {
         return null;
     }
 
-    /**
-     * Método para consultar si un médico esta disponible según la fecha.
-     * @param idMedico ID del médico.
-     * @param fecha Fecha a consultar.
-     * @return Si el médico está o no está disponible en esa fecha.
-     */
-    public boolean consultarDisponibilidadMedico(String idMedico, LocalDateTime fecha) {
-
-        Medico medico = (Medico) searchUserById(idMedico);
-        if(medico == null) {
-            return false;
-        }
-
-        return validarHorarioMedico(medico, fecha);
-    }
-
-    /**
-     * Método para consultar si un consultorio está disponible según la fecha.
-     * @param numeroConsultorio Número del consultorio
-     * @param fecha Fecha en la que se consultará la disponibilidad.
-     * @return Si el consultorio está o no está disponible en la fecha consultada.
-     */
-    public boolean consultarDisponibilidadConsultorio(String numeroConsultorio, LocalDateTime fecha) {
-
-        Consultorio consultorio = searchConsultorioByNumero(numeroConsultorio);
-        if(consultorio == null) {
-            return false;
-        }
-
-        return validarHorarioConsultorio(consultorio, fecha);
-    }
-
     public String obtenerDetalleConsultorios() {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        for (Consultorio consultorio : consultorios) {
+        for (Consultorio consultorio : gestionarUsuario.getConsultorios()) {
             sb.append("Consultorio: ").append(consultorio.getNumero()).append("\n");
             sb.append("Ubicación: ").append(consultorio.getUbicacion()).append("\n");
             sb.append("Estado: ").append(consultorio.isDisponibilidad() ? "Disponible" : "Ocupado").append("\n");
 
-            // Buscar citas programadas en este consultorio
             List<Cita> citasConsultorio = citas.stream()
                     .filter(c -> c.getConsultorio().getNumero().equals(consultorio.getNumero()))
                     .filter(c -> c.getEstadoCita() != citaState.CANCELADA && c.getEstadoCita() != citaState.COMPLETADA)
-                    .filter(c -> c.getFecha().isAfter(LocalDateTime.now())) // Solo citas futuras
+                    .filter(c -> c.getFecha().isAfter(LocalDateTime.now()))
                     .sorted(Comparator.comparing(Cita::getFecha))
                     .collect(Collectors.toList());
 
@@ -693,45 +504,86 @@ public class Service {
         return sb.toString();
     }
 
-    /**
-     * metodos encargados generar listas de objetos objetos registrados en el sistema
-     * <p>
-     *     estos metodos hacen una copia a las listas originales
-     *     para que al modificar las listas, solo se modifiquen la copie
-     *     y que la lista original no se modifique.
-     * </p>
-     * @return
-     */
-
-    /**
-     * Obtiene una lista con todos los pacientes registrados en el sistema.
-     * @return una lista de objetos Paciente registrados en el sistema
-     */
     public List<Paciente> enlistarPacientes(){
-        return new ArrayList<>(pacientes);
+        return new ArrayList<>(gestionarUsuario.getPacientes());
     }
 
-    /**
-     * Obtiene una lista con todos los médicos registrados en el sistema.
-     * @return una lista de objetos Medico registrados en el sistema
-     */
     public List<Medico> enlistarMedicos() {
-        return new ArrayList<>(medicos);
+        return new ArrayList<>(gestionarUsuario.getMedicos());
     }
 
-    /**
-     * Obtiene una lista con todos los consultorios disponibles en el sistema.
-     * @return una lista de objetos Consultorio registrados en el sistema
-     */
     public List<Consultorio> enlistarConsultorios() {
-        return new ArrayList<>(consultorios);
+        return new ArrayList<>(gestionarUsuario.getConsultorios());
+    }
+
+    public List<Cita> enlistarCitas() {return gestionarUsuario.getCitas();}
+
+    /**
+     * Guarda todas las citas en el archivo CITAS_FILE (una cita por línea en CSV)
+     */
+    private void guardarCitasEnArchivo() {
+        try {
+            // Asegurar directorio
+            if (CITAS_FILE.getParent() != null) {
+                Files.createDirectories(CITAS_FILE.getParent());
+            }
+
+            List<String> lines = new ArrayList<>();
+            for (Cita c : citas) {
+                lines.add(c.toCSV());
+            }
+
+            Files.write(CITAS_FILE, lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            System.err.println("Error guardando citas en archivo: " + e.getMessage());
+        }
     }
 
     /**
-     * Obtiene una lista con todas las citas médicas registradas en el sistema.
-     * @return una lista de objetos Cita registrados en el sistema
+     * Carga las citas desde el archivo. Si una línea no puede parsearse o faltan usuarios referenciados,
+     * se ignora esa línea y se continúa. También actualiza contadorCitas para no repetir IDs.
      */
-    public List<Cita> enlistarCitas() {
-        return new ArrayList<>(citas);
+    private void cargarCitasDesdeArchivo() {
+        if (!Files.exists(CITAS_FILE)) {
+            return;
+        }
+
+        int maxIdNum = 0;
+
+        try {
+            List<String> lines = Files.readAllLines(CITAS_FILE, StandardCharsets.UTF_8);
+            for (String line : lines) {
+                if (line == null || line.trim().isEmpty()) continue;
+                try {
+                    Cita c = Cita.fromCSV(line, gestionarUsuario);
+                    if (c == null) continue;
+
+                    if (c.getPaciente() == null || c.getMedico() == null || c.getConsultorio() == null) {
+                        System.err.println("Se omitió cargar cita por referencias faltantes: " + line);
+                        continue;
+                    }
+
+                    citas.add(c);
+
+                    c.getMedico().agregarCita(c);
+
+                    String id = c.getId();
+                    String prefix = "CITA-A";
+                    if (id != null && id.startsWith(prefix)) {
+                        String numberPart = id.substring(prefix.length());
+                        try {
+                            int num = Integer.parseInt(numberPart);
+                            if (num > maxIdNum) maxIdNum = num;
+                        } catch (NumberFormatException ignored) { }
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Error parseando línea de cita: " + line + " -> " + ex.getMessage());
+                }
+            }
+
+            this.contadorCitas = Math.max(this.contadorCitas, maxIdNum + 1);
+        } catch (IOException e) {
+            System.err.println("Error cargando citas desde archivo: " + e.getMessage());
+        }
     }
 }
